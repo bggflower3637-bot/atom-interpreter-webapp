@@ -1,222 +1,220 @@
-// =========================
-// Atom Interpreter Demo - script.js (with TTS)
-// =========================
+// script.js
+// Atom Interpreter – 브라우저 음성 인식 + 데모 번역 + 음성 출력
 
-// 작은 헬퍼: 여러 후보 ID 중에서 먼저 발견되는 요소를 반환
-function byId(...ids) {
-  for (const id of ids) {
-    const el = document.getElementById(id);
-    if (el) return el;
+// ==== DOM 요소 참조 ====
+const fromLangSelect = document.getElementById("fromLang");
+const toLangSelect = document.getElementById("toLang");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const statusText = document.getElementById("statusText");
+const statusIndicator = document.getElementById("statusIndicator");
+const originalTextArea = document.getElementById("originalText");
+const translatedTextArea = document.getElementById("translatedText");
+
+// ==== 상태 ====
+let recognition = null;
+let recognizing = false;
+
+// ==== 유틸: 상태 표시 ====
+function setStatus(text, mode = "idle") {
+  statusText.textContent = text;
+
+  if (!statusIndicator) return;
+  statusIndicator.className = "status-indicator";
+
+  if (mode === "listening") {
+    statusIndicator.classList.add("listening");
+  } else if (mode === "error") {
+    statusIndicator.classList.add("error");
+  } else if (mode === "speaking") {
+    statusIndicator.classList.add("speaking");
   }
-  return null;
 }
 
-// DOM 요소 참조
-const fromSelect = byId('fromLang', 'from-language');
-const toSelect = byId('toLang', 'to-language');
-const startBtn = byId('startDemo', 'start-demo');
-const stopBtn = byId('stopDemo', 'stop-demo');
-const originalBox = byId('originalSpeech', 'original-speech');
-const translatedBox = byId('translatedSpeech', 'translated-speech');
-const statusEl = byId('statusText', 'status-text');
-
-// =========================
-// Browser TTS (Text-To-Speech)
-// =========================
-let isSpeakingEnabled = false;
-
-function getLangCodeForSpeech(targetValue) {
-  // targetValue: 셀렉트 박스의 value 또는 label 텍스트
-  if (!targetValue) return 'en-US';
-
-  const v = String(targetValue).toLowerCase();
-
-  if (v.includes('korean') || v === 'ko' || v === 'ko-kr') return 'ko-KR';
-  if (v.includes('japanese') || v === 'ja' || v === 'ja-jp') return 'ja-JP';
-  if (v.includes('spanish') || v === 'es' || v === 'es-es') return 'es-ES';
-  if (v.includes('chinese') || v === 'zh' || v === 'zh-cn') return 'zh-CN';
-  if (v.includes('french') || v === 'fr' || v === 'fr-fr') return 'fr-FR';
-
-  // 기본값: 영어
-  return 'en-US';
+function updateButtons() {
+  if (recognizing) {
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+  } else {
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+  }
 }
 
-function speakText(text, targetValue) {
-  if (!isSpeakingEnabled) return;
+// ==== 번역 데모 함수 (진짜 번역 대신 prefix만 바꿔주는 버전) ====
+function fakeTranslate(text) {
+  const to = toLangSelect.value;
+
+  if (!text || !text.trim()) return "";
+
+  if (to === "en-US") {
+    return "[English demo] " + text;
+  }
+  if (to === "ko-KR") {
+    return "[Korean demo] " + text;
+  }
+  if (to === "es-ES") {
+    return "[Spanish demo] " + text;
+  }
+  if (to === "ja-JP") {
+    return "[Japanese demo] " + text;
+  }
+  return "[Demo] " + text;
+}
+
+// ==== TTS(음성 출력) ====
+function speakText(text) {
+  if (!window.speechSynthesis) {
+    setStatus("이 브라우저는 음성 출력을 지원하지 않습니다.", "error");
+    return;
+  }
+
   if (!text || !text.trim()) return;
 
-  if (!('speechSynthesis' in window)) {
-    console.warn('speechSynthesis (TTS)를 지원하지 않는 브라우저입니다.');
-    return;
-  }
+  const utterance = new SpeechSynthesisUtterance(text);
 
-  const langCode = getLangCodeForSpeech(targetValue);
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = langCode;
+  // 번역된 언어에 맞춰 음성 언어 설정
+  utterance.lang = toLangSelect.value || "en-US";
 
-  // 이전에 말하던 것 중지 후 새로 재생
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utter);
-}
+  utterance.onstart = () => {
+    setStatus("Playing translated speech…", "speaking");
+  };
 
-// =========================
-// Speech Recognition (브라우저 데모용 STT)
-// =========================
-
-const SpeechRecognition =
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-
-let recognition = null;
-let isListening = false;
-
-function getLangCodeForRecognition(fromValue) {
-  if (!fromValue) return 'ko-KR';
-
-  const v = String(fromValue).toLowerCase();
-
-  if (v.includes('korean') || v === 'ko' || v === 'ko-kr') return 'ko-KR';
-  if (v.includes('japanese') || v === 'ja' || v === 'ja-jp') return 'ja-JP';
-  if (v.includes('spanish') || v === 'es' || v === 'es-es') return 'es-ES';
-  if (v.includes('chinese') || v === 'zh' || v === 'zh-cn') return 'zh-CN';
-  if (v.includes('french') || v === 'fr' || v === 'fr-fr') return 'fr-FR';
-
-  // 기본값: 영어
-  return 'en-US';
-}
-
-function initRecognition() {
-  if (!SpeechRecognition) {
-    console.warn('이 브라우저는 Web Speech Recognition API를 지원하지 않습니다.');
-    if (statusEl) {
-      statusEl.textContent =
-        '⚠️ 이 브라우저에서는 음성 인식을 사용할 수 없습니다. (Chrome 데스크톱 추천)';
+  utterance.onend = () => {
+    if (recognizing) {
+      setStatus("Listening… you can keep speaking.", "listening");
+    } else {
+      setStatus("Stopped.", "idle");
     }
-    return;
-  }
-
-  recognition = new SpeechRecognition();
-  recognition.continuous = true;
-  recognition.interimResults = true;
-
-  const fromValue =
-    (fromSelect && (fromSelect.value || fromSelect.options[fromSelect.selectedIndex]?.text)) ||
-    'Korean';
-  recognition.lang = getLangCodeForRecognition(fromValue);
-
-  recognition.onstart = () => {
-    isListening = true;
-    if (statusEl) statusEl.textContent = 'Listening... you can speak now.';
   };
 
-  recognition.onend = () => {
-    isListening = false;
-    if (statusEl) statusEl.textContent = 'Stopped. Click "Start Demo" to listen again.';
-  };
-
-  recognition.onerror = (event) => {
-    console.error('Speech recognition error:', event.error);
-    if (statusEl) statusEl.textContent = 'Error: ' + event.error;
-  };
-
-  recognition.onresult = (event) => {
-    // 가장 마지막 결과 사용
-    const lastResult = event.results[event.results.length - 1];
-    if (!lastResult) return;
-
-    const transcript = lastResult[0].transcript.trim();
-    if (!transcript) return;
-
-    if (originalBox) originalBox.value = transcript;
-
-    // 데모용 "번역" 문자열 생성
-    const toLabel =
-      (toSelect && (toSelect.value || toSelect.options[toSelect.selectedIndex]?.text)) ||
-      'English';
-
-    const translated = `[${toLabel} demo] ` + transcript;
-
-    if (translatedBox) translatedBox.value = translated;
-
-    // 브라우저 TTS로 읽어주기
-    speakText(translated, toLabel);
-  };
+  window.speechSynthesis.cancel(); // 이전 재생 중단
+  window.speechSynthesis.speak(utterance);
 }
 
-// =========================
-// UI 이벤트 바인딩
-// =========================
+// ==== SpeechRecognition 초기화 ====
+function createRecognitionInstance() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
 
-function updateRecognitionLanguage() {
-  if (!recognition || !fromSelect) return;
-  const fromValue =
-    fromSelect.value || fromSelect.options[fromSelect.selectedIndex]?.text;
-  recognition.lang = getLangCodeForRecognition(fromValue);
-}
-
-function handleStart() {
   if (!SpeechRecognition) {
-    alert('이 브라우저에서는 음성 인식을 사용할 수 없습니다. (Chrome 데스크톱 추천)');
-    return;
+    setStatus(
+      "이 브라우저는 음성 인식을 지원하지 않습니다. 데스크톱 Chrome 브라우저에서 사용해주세요.",
+      "error"
+    );
+    alert(
+      "현재 브라우저에서는 음성 인식이 지원되지 않습니다.\n데스크톱 Chrome 브라우저에서 열어주세요."
+    );
+    return null;
   }
 
-  if (!recognition) {
-    initRecognition();
-  }
+  const recog = new SpeechRecognition();
+  recog.lang = fromLangSelect.value || "ko-KR";
+  recog.interimResults = true;
+  recog.continuous = true;
 
-  updateRecognitionLanguage();
-  isSpeakingEnabled = true;
+  recog.onstart = () => {
+    recognizing = true;
+    updateButtons();
+    setStatus("Listening… you can speak now. 🎤", "listening");
+    console.log("SpeechRecognition started");
+  };
 
-  try {
-    recognition.start();
-  } catch (e) {
-    // 이미 실행 중이면 start()에서 에러가 날 수 있음 → 무시
-    console.warn('Recognition start error (may already be running):', e);
-  }
+  recog.onresult = (event) => {
+    let finalTranscript = "";
+    let interimTranscript = "";
 
-  if (statusEl) {
-    statusEl.textContent =
-      'Listening... you can speak now. This is a browser demo of Atom Interpreter.';
-  }
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript;
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+
+    // 원문 텍스트 영역 업데이트
+    const combined =
+      (originalTextArea.value ? originalTextArea.value + " " : "") +
+      (finalTranscript || interimTranscript);
+    originalTextArea.value = combined.trim();
+
+    // 최종 인식 결과가 확정된 경우 번역 + 음성 출력
+    if (finalTranscript) {
+      const translated = fakeTranslate(finalTranscript);
+      translatedTextArea.value =
+        (translatedTextArea.value
+          ? translatedTextArea.value + "\n"
+          : "") + translated;
+
+      speakText(translated);
+    }
+  };
+
+  recog.onerror = (event) => {
+    console.error("SpeechRecognition error:", event.error);
+    recognizing = false;
+    updateButtons();
+    setStatus("음성 인식 에러: " + event.error, "error");
+  };
+
+  recog.onend = () => {
+    console.log("SpeechRecognition ended");
+    recognizing = false;
+    updateButtons();
+    // 사용자가 Stop을 눌러서 끝난 건지,
+    // 브라우저에서 자동으로 끊긴 건지 상관없이 메시지 표시
+    setStatus("Stopped. Click “Start Demo” to listen again.", "idle");
+  };
+
+  return recog;
 }
 
-function handleStop() {
-  isSpeakingEnabled = false;
+// ==== 이벤트 핸들러: Start / Stop ====
+startBtn.addEventListener("click", () => {
+  if (recognizing) return;
 
-  if (recognition && isListening) {
-    recognition.stop();
-  }
-
-  if ('speechSynthesis' in window) {
+  // 기존 TTS 중단
+  if (window.speechSynthesis) {
     window.speechSynthesis.cancel();
   }
 
-  if (statusEl) statusEl.textContent = 'Stopped.';
-}
+  if (!recognition) {
+    recognition = createRecognitionInstance();
+    if (!recognition) return; // 브라우저 지원 안 하면 null
+  }
 
-// From 언어 변경 시 recognition.lang 업데이트
-if (fromSelect) {
-  fromSelect.addEventListener('change', () => {
-    updateRecognitionLanguage();
-  });
-}
+  // 현재 선택된 언어로 갱신
+  recognition.lang = fromLangSelect.value || "ko-KR";
 
-// Start / Stop 버튼 연결
-if (startBtn) {
-  startBtn.addEventListener('click', handleStart);
-}
-
-if (stopBtn) {
-  stopBtn.addEventListener('click', handleStop);
-}
-
-// 페이지 로드 시 한 번 초기화
-document.addEventListener('DOMContentLoaded', () => {
-  if (SpeechRecognition) {
-    initRecognition();
-  } else if (statusEl) {
-    statusEl.textContent =
-      '⚠️ 브라우저가 음성 인식을 지원하지 않습니다. (Chrome 데스크톱 추천)';
+  try {
+    recognition.start();
+  } catch (err) {
+    // 이미 start 상태일 때 또 start 호출하면 에러가 나는데, 무시해도 됨
+    console.warn("Recognition start error:", err);
   }
 });
 
+stopBtn.addEventListener("click", () => {
+  if (!recognition) return;
+  recognizing = false;
+  updateButtons();
+
+  try {
+    recognition.stop();
+  } catch (err) {
+    console.warn("Recognition stop error:", err);
+  }
+
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+  }
+
+  setStatus("Stopped.", "idle");
+});
+
+// 초기 상태
+setStatus('Idle – click "Start Demo" to begin.', "idle");
+updateButtons();
 
