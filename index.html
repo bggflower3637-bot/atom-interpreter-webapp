@@ -8,30 +8,7 @@
   <script defer src="script.js"></script>
 </head>
 <body>
-  <!-- 마이크 권한 안내 오버레이 -->
-  <div id="mic-overlay" class="mic-overlay">
-    <div class="mic-overlay-inner">
-      <h1>Atom Interpreter</h1>
-      <p>
-        헬프포리 실시간 음성 통역을 사용하려면 한 번은<br />
-        브라우저에서 마이크 사용을 허용해야 합니다.
-      </p>
-      <p class="hint">
-        아래 버튼을 눌러 오버레이를 닫은 뒤,<br />
-        화면의 <strong>Start Demo</strong> 버튼을 눌러 테스트해 보세요.
-      </p>
-
-      <!-- 이 버튼이 오버레이만 닫아주는 역할 -->
-      <button
-        class="overlay-button"
-        onclick="document.getElementById('mic-overlay').style.display='none';"
-      >
-        마이크 허용하고 시작하기
-      </button>
-    </div>
-  </div>
-
-  <!-- 메인 앱 화면 -->
+  <!-- 메인 앱 화면 (오버레이 완전 제거 버전) -->
   <div class="app">
     <header class="header">
       <span class="badge">PROPRIETARY AI + PROVISIONAL PATENT FILED (USPTO)</span>
@@ -103,6 +80,3 @@
 </body>
 </html>
 
-
-
-    
