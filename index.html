@@ -1,82 +1,79 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>Atom Interpreter – Real-time Voice Translation</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="script.js"></script>
-</head>
-<body>
-  <!-- 메인 앱 화면 (오버레이 완전 제거 버전) -->
-  <div class="app">
-    <header class="header">
-      <span class="badge">PROPRIETARY AI + PROVISIONAL PATENT FILED (USPTO)</span>
-      <h1>Atom Interpreter</h1>
-      <p>Instant Voice Translation for Real Conversations</p>
-    </header>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Atom Interpreter – Real-Time Voice Translation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <span class="badge">
+          PROPRIETARY AI • PROVISIONAL PATENT FILED (USPTO)
+        </span>
+        <h1>Atom Interpreter</h1>
+        <p>Instant Voice Translation for Real Conversations</p>
+      </header>
 
-    <!-- 상단 컨트롤 (언어 선택 + 버튼) -->
-    <section class="controls">
-      <div class="control-group">
-        <label for="fromLang">From</label>
-        <select id="fromLang">
-          <option value="ko-KR">Korean</option>
-          <option value="en-US">English</option>
-          <option value="es-ES">Spanish</option>
-          <option value="ja-JP">Japanese</option>
-        </select>
+      <div class="controls">
+        <div class="select-group">
+          <label>
+            From
+            <select id="from-lang">
+              <option value="ko-KR">Korean</option>
+              <option value="en-US">English</option>
+            </select>
+          </label>
+          <span class="arrow">➝</span>
+          <label>
+            To
+            <select id="to-lang">
+              <option value="en-US">English</option>
+              <option value="ko-KR">Korean</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="buttons">
+          <button id="start-btn" class="primary">Start Demo</button>
+          <button id="stop-btn" class="secondary" disabled>Stop</button>
+        </div>
       </div>
 
-      <div class="control-group">
-        <label for="toLang">To</label>
-        <select id="toLang">
-          <option value="en-US">English</option>
-          <option value="ko-KR">Korean</option>
-          <option value="es-ES">Spanish</option>
-          <option value="ja-JP">Japanese</option>
-        </select>
+      <div class="status-bar">
+        <span id="status-text">Idle – click "Start Demo" to begin.</span>
       </div>
 
-      <div class="button-group">
-        <button id="startBtn" class="primary">Start Demo</button>
-        <button id="stopBtn" class="secondary" disabled>Stop</button>
+      <div class="panels">
+        <section class="panel">
+          <div class="panel-label">Original Speech (live)</div>
+          <textarea
+            id="original-text"
+            placeholder="여기에 인식된 음성이 표시됩니다."
+            readonly
+          ></textarea>
+        </section>
+
+        <section class="panel">
+          <div class="panel-label">Translated Speech (demo)</div>
+          <textarea
+            id="translated-text"
+            placeholder="여기에 번역된 문장이 표시되고, 스피커로 재생됩니다."
+            readonly
+          ></textarea>
+        </section>
       </div>
-    </section>
 
-    <!-- 상태 표시줄 -->
-    <section class="status-bar">
-      <div class="status-indicator" id="statusIndicator"></div>
-      <span id="statusText">Idle – click “Start Demo” to begin.</span>
-    </section>
+      <footer class="footer">
+        <p class="footer_hint">
+          This web demo uses the browser's speech recognition to simulate Atom
+          Interpreter. The production version connects to our proprietary Atom
+          Interpreter AI engine with real-time, low-latency translation.
+        </p>
+      </footer>
+    </div>
 
-    <!-- 음성 입력 / 번역 결과 패널 -->
-    <section class="panels">
-      <article class="panel">
-        <h2>Original Speech (live)</h2>
-        <textarea
-          id="originalText"
-          placeholder="여기에 인식된 음성이 표시됩니다."
-        ></textarea>
-      </article>
-
-      <article class="panel">
-        <h2>Translated Speech (demo)</h2>
-        <textarea
-          id="translatedText"
-          placeholder="여기에 번역된 문장이 표시되고, 스피커로 재생됩니다."
-        ></textarea>
-      </article>
-    </section>
-
-    <footer class="footer">
-      <p>
-        This web demo uses the browser's speech recognition to simulate Atom
-        Interpreter. The production version connects to our proprietary Atom
-        Interpreter AI engine with real-time, low-latency translation.
-      </p>
-    </footer>
-  </div>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
-
