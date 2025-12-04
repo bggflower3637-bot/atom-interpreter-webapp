@@ -140,16 +140,21 @@ function createRecognitionInstance() {
       (finalTranscript || interimTranscript);
     originalTextArea.value = combined.trim();
 
-    // 최종 인식 결과가 확정된 경우 번역 + 음성 출력
+       // 최종 인식 결과가 확정된 경우 번역 + 음성 출력
     if (finalTranscript) {
       const translated = fakeTranslate(finalTranscript);
+
+      // 1) 화면에 보여줄 텍스트는 라벨까지 그대로
       translatedTextArea.value =
         (translatedTextArea.value
           ? translatedTextArea.value + "\n"
           : "") + translated;
 
-      speakText(translated);
+      // 2) 소리로 읽어줄 텍스트에서는 [English demo] 같은 라벨 제거
+      const speechText = translated.replace(/^\[[^\]]*\]\s*/, "");
+      speakText(speechText);
     }
+
   };
 
   recog.onerror = (event) => {
@@ -217,4 +222,5 @@ stopBtn.addEventListener("click", () => {
 // 초기 상태
 setStatus('Idle – click "Start Demo" to begin.', "idle");
 updateButtons();
+
 
