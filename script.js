@@ -15,12 +15,12 @@ const statusText = document.getElementById("status-text");
 
 // 초기 설정
 function init() {
-  // 기본 언어 설정 (Korean -> English)
-  fromLangSelect.value = "ko-KR";
-  toLangSelect.value = "en-US";
+  // 기본 언어 (Korean -> English)
+  if (fromLangSelect) fromLangSelect.value = "ko-KR";
+  if (toLangSelect) toLangSelect.value = "en-US";
 
-  startBtn.addEventListener("click", startDemo);
-  stopBtn.addEventListener("click", stopDemo);
+  if (startBtn) startBtn.addEventListener("click", startDemo);
+  if (stopBtn) stopBtn.addEventListener("click", stopDemo);
 
   updateStatus('Idle – click "Start Demo" to begin.');
   toggleControls(false);
@@ -37,7 +37,7 @@ function setupRecognition() {
   }
 
   const rec = new SpeechRecognition();
-  rec.lang = fromLangSelect.value || "ko-KR";
+  rec.lang = (fromLangSelect && fromLangSelect.value) || "ko-KR";
   rec.interimResults = true;
   rec.continuous = true;
 
@@ -75,20 +75,18 @@ function setupRecognition() {
       }
     }
 
-    // 왼쪽 창: 실시간/최종 음성 텍스트 표시
     const displayText = finalTranscript || interimTranscript || "";
-    originalTextArea.value = displayText;
+    if (originalTextArea) originalTextArea.value = displayText;
 
-    // 최종 문장이 확정되었을 때만 번역 + 음성 출력
     if (finalTranscript) {
       const translatedWithLabel = fakeTranslate(finalTranscript);
 
-      // 오른쪽 창: 라벨 포함해서 그대로 보여주기
-      translatedTextArea.value =
-        (translatedTextArea.value ? translatedTextArea.value + "\n" : "") +
-        translatedWithLabel;
+      if (translatedTextArea) {
+        translatedTextArea.value =
+          (translatedTextArea.value ? translatedTextArea.value + "\n" : "") +
+          translatedWithLabel;
+      }
 
-      // 음성으로 읽어줄 텍스트: [English demo] 같은 라벨 제거
       const speechText = translatedWithLabel.replace(/^\[[^\]]*\]\s*/, "");
       speakText(speechText);
     }
@@ -124,14 +122,11 @@ function stopDemo() {
 }
 
 // 가짜 번역 함수 (데모용)
-// 실제 제품에서는 여기서 OpenAI Realtime / Translation API로 교체
 function fakeTranslate(text) {
-  const to = toLangSelect.value;
-
+  const to = (toLangSelect && toLangSelect.value) || "en-US";
   if (!text || !text.trim()) return "";
 
   if (to === "en-US") {
-    // 영어 데모 라벨
     return "[English demo] " + text;
   } else if (to === "ko-KR") {
     return "[Korean demo] " + text;
@@ -148,33 +143,29 @@ function speakText(text) {
     return;
   }
 
-  // 이전 발화 중지
   window.speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);
-
-  // 목표 언어에 따라 음성 언어 설정
-  utterance.lang = toLangSelect.value || "en-US";
+  utterance.lang = (toLangSelect && toLangSelect.value) || "en-US";
   utterance.rate = 1.0;
   utterance.pitch = 1.0;
 
   window.speechSynthesis.speak(utterance);
 }
 
-// 상태 메세지 업데이트
+// 상태 메세지
 function updateStatus(message) {
   if (statusText) {
     statusText.textContent = message;
   }
 }
 
-// 버튼 상태 업데이트
+// 버튼 상태
 function toggleControls(listening) {
-  startBtn.disabled = listening;
-  stopBtn.disabled = !listening;
+  if (startBtn) startBtn.disabled = listening;
+  if (stopBtn) stopBtn.disabled = !listening;
 }
 
 // 초기화 실행
 document.addEventListener("DOMContentLoaded", init);
-
 
