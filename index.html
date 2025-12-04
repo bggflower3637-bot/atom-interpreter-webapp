@@ -2,82 +2,86 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atom Interpreter – Real-Time Voice Translation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="overlay" id="overlay">
+    <div class="overlay-card">
+      <h1>Atom Interpreter</h1>
+      <p>
+        핸즈프리 실시간 음성 통역을 시작하려면 아래 버튼을 누르세요.<br />
+        (브라우저 보안 규칙 때문에 마이크는 반드시 한 번 클릭이 필요합니다.)
+      </p>
+      <button id="overlayStartBtn">마이크 허용하고 시작하기</button>
+    </div>
+  </div>
+
   <div class="app">
     <header class="header">
       <h1>Atom Interpreter</h1>
-      <p>Instant voice translation for real conversations.</p>
-      <span class="badge">Prototype · Web App</span>
+      <p>Instant Voice Translation for Real Conversations</p>
+      <span class="badge">Proprietary AI + Provisional Patent Filed (USPTO)</span>
     </header>
 
     <section class="controls">
       <div class="select-group">
-        <label for="source-lang">From</label>
-        <select id="source-lang">
-          <option value="ko">Korean</option>
-          <option value="en" selected>English</option>
-          <option value="es">Spanish</option>
-          <option value="ja">Japanese</option>
-          <option value="zh">Chinese</option>
+        <label for="sourceLang">From</label>
+        <select id="sourceLang">
+          <option value="en-US">English</option>
+          <option value="ko-KR">Korean</option>
+          <option value="es-ES">Spanish</option>
+          <option value="ja-JP">Japanese</option>
         </select>
-      </div>
-
-      <div class="swap">
-        ⇄
       </div>
 
       <div class="select-group">
-        <label for="target-lang">To</label>
-        <select id="target-lang">
+        <label for="targetLang">To</label>
+        <select id="targetLang">
+          <option value="ko">Korean</option>
           <option value="en">English</option>
-          <option value="ko" selected>Korean</option>
           <option value="es">Spanish</option>
           <option value="ja">Japanese</option>
-          <option value="zh">Chinese</option>
         </select>
       </div>
-    </section>
 
-    <section class="buttons">
-      <button id="start-btn">🎙 Start Demo</button>
-      <button id="stop-btn" disabled>■ Stop</button>
-    </section>
+      <div class="buttons">
+        <button id="startBtn" class="primary">Start Demo</button>
+        <button id="stopBtn" class="secondary" disabled>Stop</button>
+      </div>
 
-    <section class="status">
-      <div id="status-indicator" class="status-indicator idle"></div>
-      <p id="status-text">Ready. Click “Start Demo” to simulate interpretation.</p>
+      <div class="status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">Idle – click “Start Demo” to begin.</span>
+      </div>
     </section>
 
     <section class="panels">
       <div class="panel">
-        <h2>Original Speech (demo)</h2>
-        <textarea id="original-text" readonly>
-This is a demo version of Atom Interpreter running on the web.
-When the real engine is connected, this area will show live speech recognition.
-        </textarea>
+        <h2>Original Speech (live)</h2>
+        <div class="panel-body">
+          <p id="originalText" class="panel-text placeholder">
+            Say something after starting the demo…
+          </p>
+        </div>
       </div>
+
       <div class="panel">
         <h2>Translated Speech (demo)</h2>
-        <textarea id="translated-text" readonly>
-여기는 Atom Interpreter 웹앱의 데모 화면입니다.
-나중에 실제 엔진이 연결되면, 이 영역에 실시간 번역 문장이 표시됩니다.
-        </textarea>
+        <div class="panel-body">
+          <p id="translatedText" class="panel-text placeholder">
+            Your AI translation will appear here in real time.
+          </p>
+        </div>
       </div>
     </section>
 
     <footer class="footer">
       <p>
-        Atom Interpreter AI is built on proprietary real-time interpretation technology.
-        A provisional patent application has been filed with the USPTO.
-      </p>
-      <p class="hint">
-        ※ 현재 버전은 화면·버튼·흐름만 구현된 프로토타입입니다.
-        나중에 Vercel 서버리스 함수 + OpenAI API를 연결해서
-        진짜 음성 동시통역 엔진을 붙이면 됩니다.
+        This web demo uses the browser’s speech recognition to simulate Atom Interpreter.
+        The production version connects to our proprietary Atom Interpreter AI engine
+        with real-time, low-latency translation.
       </p>
     </footer>
   </div>
@@ -85,3 +89,5 @@ When the real engine is connected, this area will show live speech recognition.
   <script src="script.js"></script>
 </body>
 </html>
+
+
