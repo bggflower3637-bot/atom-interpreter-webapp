@@ -1,226 +1,180 @@
-// script.js
-// Atom Interpreter – 브라우저 음성 인식 + 데모 번역 + 음성 출력
+// Atom Interpreter demo script
+// 브라우저 내장 STT + TTS를 사용한 데모 버전입니다.
 
-// ==== DOM 요소 참조 ====
-const fromLangSelect = document.getElementById("fromLang");
-const toLangSelect = document.getElementById("toLang");
-const startBtn = document.getElementById("startBtn");
-const stopBtn = document.getElementById("stopBtn");
-const statusText = document.getElementById("statusText");
-const statusIndicator = document.getElementById("statusIndicator");
-const originalTextArea = document.getElementById("originalText");
-const translatedTextArea = document.getElementById("translatedText");
-
-// ==== 상태 ====
 let recognition = null;
-let recognizing = false;
+let isListening = false;
 
-// ==== 유틸: 상태 표시 ====
-function setStatus(text, mode = "idle") {
-  statusText.textContent = text;
+// DOM 요소들
+const fromLangSelect = document.getElementById("from-lang");
+const toLangSelect = document.getElementById("to-lang");
+const startBtn = document.getElementById("start-btn");
+const stopBtn = document.getElementById("stop-btn");
+const originalTextArea = document.getElementById("original-text");
+const translatedTextArea = document.getElementById("translated-text");
+const statusText = document.getElementById("status-text");
 
-  if (!statusIndicator) return;
-  statusIndicator.className = "status-indicator";
+// 초기 설정
+function init() {
+  // 기본 언어 설정 (Korean -> English)
+  fromLangSelect.value = "ko-KR";
+  toLangSelect.value = "en-US";
 
-  if (mode === "listening") {
-    statusIndicator.classList.add("listening");
-  } else if (mode === "error") {
-    statusIndicator.classList.add("error");
-  } else if (mode === "speaking") {
-    statusIndicator.classList.add("speaking");
-  }
+  startBtn.addEventListener("click", startDemo);
+  stopBtn.addEventListener("click", stopDemo);
+
+  updateStatus('Idle – click "Start Demo" to begin.');
+  toggleControls(false);
 }
 
-function updateButtons() {
-  if (recognizing) {
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-  } else {
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-  }
-}
-
-// ==== 번역 데모 함수 (진짜 번역 대신 prefix만 바꿔주는 버전) ====
-function fakeTranslate(text) {
-  const to = toLangSelect.value;
-
-  if (!text || !text.trim()) return "";
-
-  if (to === "en-US") {
-    return "[English demo] " + text;
-  }
-  if (to === "ko-KR") {
-    return "[Korean demo] " + text;
-  }
-  if (to === "es-ES") {
-    return "[Spanish demo] " + text;
-  }
-  if (to === "ja-JP") {
-    return "[Japanese demo] " + text;
-  }
-  return "[Demo] " + text;
-}
-
-// ==== TTS(음성 출력) ====
-function speakText(text) {
-  if (!window.speechSynthesis) {
-    setStatus("이 브라우저는 음성 출력을 지원하지 않습니다.", "error");
-    return;
-  }
-
-  if (!text || !text.trim()) return;
-
-  const utterance = new SpeechSynthesisUtterance(text);
-
-  // 번역된 언어에 맞춰 음성 언어 설정
-  utterance.lang = toLangSelect.value || "en-US";
-
-  utterance.onstart = () => {
-    setStatus("Playing translated speech…", "speaking");
-  };
-
-  utterance.onend = () => {
-    if (recognizing) {
-      setStatus("Listening… you can keep speaking.", "listening");
-    } else {
-      setStatus("Stopped.", "idle");
-    }
-  };
-
-  window.speechSynthesis.cancel(); // 이전 재생 중단
-  window.speechSynthesis.speak(utterance);
-}
-
-// ==== SpeechRecognition 초기화 ====
-function createRecognitionInstance() {
+// STT 인식기 세팅
+function setupRecognition() {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    setStatus(
-      "이 브라우저는 음성 인식을 지원하지 않습니다. 데스크톱 Chrome 브라우저에서 사용해주세요.",
-      "error"
-    );
-    alert(
-      "현재 브라우저에서는 음성 인식이 지원되지 않습니다.\n데스크톱 Chrome 브라우저에서 열어주세요."
-    );
+    alert("이 브라우저에서는 음성 인식이 지원되지 않습니다. Chrome을 사용해 주세요.");
     return null;
   }
 
-  const recog = new SpeechRecognition();
-  recog.lang = fromLangSelect.value || "ko-KR";
-  recog.interimResults = true;
-  recog.continuous = true;
+  const rec = new SpeechRecognition();
+  rec.lang = fromLangSelect.value || "ko-KR";
+  rec.interimResults = true;
+  rec.continuous = true;
 
-  recog.onstart = () => {
-    recognizing = true;
-    updateButtons();
-    setStatus("Listening… you can speak now. 🎤", "listening");
-    console.log("SpeechRecognition started");
+  rec.onstart = () => {
+    isListening = true;
+    updateStatus("Listening… you can keep speaking.");
+    toggleControls(true);
   };
 
-  recog.onresult = (event) => {
+  rec.onerror = (event) => {
+    console.error("Recognition error:", event.error);
+    updateStatus("Error occurred: " + event.error);
+    isListening = false;
+    toggleControls(false);
+  };
+
+  rec.onend = () => {
+    isListening = false;
+    updateStatus('Stopped. Click "Start Demo" to listen again.');
+    toggleControls(false);
+  };
+
+  rec.onresult = (event) => {
     let finalTranscript = "";
     let interimTranscript = "";
 
     for (let i = event.resultIndex; i < event.results.length; i++) {
-      const transcript = event.results[i][0].transcript;
+      const result = event.results[i];
+      const transcript = result[0].transcript;
 
-      if (event.results[i].isFinal) {
+      if (result.isFinal) {
         finalTranscript += transcript;
       } else {
         interimTranscript += transcript;
       }
     }
 
-    // 원문 텍스트 영역 업데이트
-    const combined =
-      (originalTextArea.value ? originalTextArea.value + " " : "") +
-      (finalTranscript || interimTranscript);
-    originalTextArea.value = combined.trim();
+    // 왼쪽 창: 실시간/최종 음성 텍스트 표시
+    const displayText = finalTranscript || interimTranscript || "";
+    originalTextArea.value = displayText;
 
-       // 최종 인식 결과가 확정된 경우 번역 + 음성 출력
+    // 최종 문장이 확정되었을 때만 번역 + 음성 출력
     if (finalTranscript) {
-      const translated = fakeTranslate(finalTranscript);
+      const translatedWithLabel = fakeTranslate(finalTranscript);
 
-      // 1) 화면에 보여줄 텍스트는 라벨까지 그대로
+      // 오른쪽 창: 라벨 포함해서 그대로 보여주기
       translatedTextArea.value =
-        (translatedTextArea.value
-          ? translatedTextArea.value + "\n"
-          : "") + translated;
+        (translatedTextArea.value ? translatedTextArea.value + "\n" : "") +
+        translatedWithLabel;
 
-      // 2) 소리로 읽어줄 텍스트에서는 [English demo] 같은 라벨 제거
-      const speechText = translated.replace(/^\[[^\]]*\]\s*/, "");
+      // 음성으로 읽어줄 텍스트: [English demo] 같은 라벨 제거
+      const speechText = translatedWithLabel.replace(/^\[[^\]]*\]\s*/, "");
       speakText(speechText);
     }
-
   };
 
-  recog.onerror = (event) => {
-    console.error("SpeechRecognition error:", event.error);
-    recognizing = false;
-    updateButtons();
-    setStatus("음성 인식 에러: " + event.error, "error");
-  };
-
-  recog.onend = () => {
-    console.log("SpeechRecognition ended");
-    recognizing = false;
-    updateButtons();
-    // 사용자가 Stop을 눌러서 끝난 건지,
-    // 브라우저에서 자동으로 끊긴 건지 상관없이 메시지 표시
-    setStatus("Stopped. Click “Start Demo” to listen again.", "idle");
-  };
-
-  return recog;
+  return rec;
 }
 
-// ==== 이벤트 핸들러: Start / Stop ====
-startBtn.addEventListener("click", () => {
-  if (recognizing) return;
+// 데모 시작
+function startDemo() {
+  if (isListening) return;
 
-  // 기존 TTS 중단
-  if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-  }
-
-  if (!recognition) {
-    recognition = createRecognitionInstance();
-    if (!recognition) return; // 브라우저 지원 안 하면 null
-  }
-
-  // 현재 선택된 언어로 갱신
-  recognition.lang = fromLangSelect.value || "ko-KR";
+  recognition = setupRecognition();
+  if (!recognition) return;
 
   try {
+    updateStatus("Requesting microphone permission…");
     recognition.start();
   } catch (err) {
-    // 이미 start 상태일 때 또 start 호출하면 에러가 나는데, 무시해도 됨
-    console.warn("Recognition start error:", err);
+    console.error("start error:", err);
+    updateStatus("Could not start recognition: " + err.message);
   }
-});
+}
 
-stopBtn.addEventListener("click", () => {
-  if (!recognition) return;
-  recognizing = false;
-  updateButtons();
+// 데모 중지
+function stopDemo() {
+  if (!recognition || !isListening) return;
 
-  try {
-    recognition.stop();
-  } catch (err) {
-    console.warn("Recognition stop error:", err);
+  recognition.stop();
+  isListening = false;
+  updateStatus('Stopped. Click "Start Demo" to listen again.');
+  toggleControls(false);
+}
+
+// 가짜 번역 함수 (데모용)
+// 실제 제품에서는 여기서 OpenAI Realtime / Translation API로 교체
+function fakeTranslate(text) {
+  const to = toLangSelect.value;
+
+  if (!text || !text.trim()) return "";
+
+  if (to === "en-US") {
+    // 영어 데모 라벨
+    return "[English demo] " + text;
+  } else if (to === "ko-KR") {
+    return "[Korean demo] " + text;
+  }
+  return "[Demo] " + text;
+}
+
+// 브라우저 TTS로 문장 읽기
+function speakText(text) {
+  if (!text || !text.trim()) return;
+
+  if (!("speechSynthesis" in window)) {
+    console.warn("이 브라우저에서는 음성 합성이 지원되지 않습니다.");
+    return;
   }
 
-  if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
+  // 이전 발화 중지
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  // 목표 언어에 따라 음성 언어 설정
+  utterance.lang = toLangSelect.value || "en-US";
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// 상태 메세지 업데이트
+function updateStatus(message) {
+  if (statusText) {
+    statusText.textContent = message;
   }
+}
 
-  setStatus("Stopped.", "idle");
-});
+// 버튼 상태 업데이트
+function toggleControls(listening) {
+  startBtn.disabled = listening;
+  stopBtn.disabled = !listening;
+}
 
-// 초기 상태
-setStatus('Idle – click "Start Demo" to begin.', "idle");
-updateButtons();
+// 초기화 실행
+document.addEventListener("DOMContentLoaded", init);
 
 
