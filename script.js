@@ -12,7 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const stopBtn = document.getElementById('stop-btn');             // Stop 버튼
   const originalBox = document.getElementById('original-text');   // 왼쪽 텍스트박스
   const translatedBox = document.getElementById('translated-text'); // 오른쪽 텍스트박스
-  const statusText = document.getElementById('status-Text');        // 상태 문구
+  const statusText = document.getElementById('status-text');        // 상태 문구
 
   let recognition = null;
   let listening = false;
@@ -156,6 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
    
+
 
 
 
