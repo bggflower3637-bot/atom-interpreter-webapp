@@ -8,8 +8,8 @@
 window.addEventListener('DOMContentLoaded', () => {
   const fromSelect = document.getElementById('fromLang');          // 언어 From
   const toSelect = document.getElementById('toLang');              // 언어 To
-  const startBtn = document.getElementById('startDemo');           // Start Demo 버튼
-  const stopBtn = document.getElementById('stopDemo');             // Stop 버튼
+  const startBtn = document.getElementById('start-btn');           // Start Demo 버튼
+  const stopBtn = document.getElementById('stop-btn');             // Stop 버튼
   const originalBox = document.getElementById('originalSpeech');   // 왼쪽 텍스트박스
   const translatedBox = document.getElementById('translatedSpeech'); // 오른쪽 텍스트박스
   const statusText = document.getElementById('statusText');        // 상태 문구
@@ -156,4 +156,5 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
    
+
 
