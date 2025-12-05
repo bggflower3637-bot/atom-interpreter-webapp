@@ -6,13 +6,13 @@
 // 4) 인식이 끝나면 오른쪽 문장을 선택된 언어로 읽어줌(TTS)
 
 window.addEventListener('DOMContentLoaded', () => {
-  const fromSelect = document.getElementById('fromLang');          // 언어 From
-  const toSelect = document.getElementById('toLang');              // 언어 To
+  const fromSelect = document.getElementById('from-Lang');          // 언어 From
+  const toSelect = document.getElementById('to-Lang');              // 언어 To
   const startBtn = document.getElementById('start-btn');           // Start Demo 버튼
   const stopBtn = document.getElementById('stop-btn');             // Stop 버튼
-  const originalBox = document.getElementById('originalSpeech');   // 왼쪽 텍스트박스
-  const translatedBox = document.getElementById('translatedSpeech'); // 오른쪽 텍스트박스
-  const statusText = document.getElementById('statusText');        // 상태 문구
+  const originalBox = document.getElementById('original-text');   // 왼쪽 텍스트박스
+  const translatedBox = document.getElementById('translated-text'); // 오른쪽 텍스트박스
+  const statusText = document.getElementById('status-Text');        // 상태 문구
 
   let recognition = null;
   let listening = false;
@@ -156,5 +156,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
    
+
 
 
