@@ -1,36 +1,64 @@
 // /api/translate.js
 
-import OpenAI from "openai";
-
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    res.status(405).json({ error: "Method not allowed" });
+    return;
   }
 
-  const { text, from, to } = req.body;
+  const { text, sourceLang, targetLang } = req.body || {};
 
-  if (!text) {
-    return res.status(400).json({ error: "No text provided" });
+  if (!text || text.trim() === "") {
+    res.status(400).json({ error: "No text provided" });
+    return;
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    console.error("Missing OPENAI_API_KEY in environment");
+    res.status(500).json({ error: "Server config error" });
+    return;
   }
 
   try {
-    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-    const completion = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: `Translate from ${from} to ${to}.` },
-        { role: "user", content: text },
-      ],
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1-mini",
+        messages: [
+          {
+            role: "system",
+            content: `You are a translation engine. Translate from ${sourceLang || "Korean"} to ${
+              targetLang || "English"
+            }. Return only the translated sentence.`,
+          },
+          { role: "user", content: text },
+        ],
+      }),
     });
 
-    const output = completion.choices[0].message.content;
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("OpenAI API error:", response.status, errText);
+      res.status(500).json({ error: "OpenAI API error" });
+      return;
+    }
 
-    res.status(200).json({ translated: output });
+    const data = await response.json();
+    const translatedText =
+      (data.choices &&
+        data.choices[0] &&
+        data.choices[0].message &&
+        data.choices[0].message.content) ||
+      "";
+
+    res.status(200).json({ translatedText: translatedText.trim() });
   } catch (error) {
-    console.error("API Error:", error);
+    console.error("Translate handler error:", error);
     res.status(500).json({ error: "Failed to translate" });
   }
 }
-
-  
