@@ -16,41 +16,47 @@
         <p>Instant Voice Translation for Real Conversations</p>
       </header>
 
-          <div class="controls">
-      <div class="select-group">
-        <label>
-          From
-          <select id="from-lang">
-            <option value="ko-KR">Korean</option>
-            <option value="en-US">English</option>
-          </select>
-        </label>
+      <div class="controls">
+        <div class="select-group">
+          <label>
+            From
+            <select id="from-lang">
+              <option value="ko-KR">Korean</option>
+              <option value="en-US">English</option>
+            </select>
+          </label>
 
-        <span class="arrow">→</span>
+          <span class="arrow">→</span>
 
-        <label>
-          To
-          <select id="to-lang">
-            <option value="en-US">English</option>
-            <option value="ko-KR">Korean</option>
-          </select>
-        </label>
+          <label>
+            To
+            <select id="to-lang">
+              <option value="en-US">English</option>
+              <option value="ko-KR">Korean</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="button-group">
+          <button id="startBtn" class="btn primary">Start Demo</button>
+          <button id="stopBtn" class="btn secondary">Stop</button>
+        </div>
       </div>
 
-      <div class="button-group">
-        <button id="startBtn" class="btn primary">Start Demo</button>
-        <button id="stopBtn" class="btn secondary">Stop</button>
+      <div class="panels">
+        <div class="panel">
+          <h2>Original Speech (live)</h2>
+          <textarea id="inputText" readonly></textarea>
+        </div>
+
+        <div class="panel">
+          <h2>Translated Speech (demo)</h2>
+          <textarea id="outputText" readonly></textarea>
+        </div>
       </div>
     </div>
 
-    <div class="panels">
-      <div class="panel">
-        <h2>Original Speech (live)</h2>
-        <textarea id="inputText" readonly></textarea>
-      </div>
-
-      <div class="panel">
-        <h2>Translated Speech (demo)</h2>
-        <textarea id="outputText" readonly></textarea>
-      </div>
-    </div>
+    <!-- 🔥 매우 중요: HTML 끝난 다음에 script.js 로딩 -->
+    <script src="script.js"></script>
+  </body>
+</html>
