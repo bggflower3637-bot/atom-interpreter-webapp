@@ -80,8 +80,7 @@ translateBtn.addEventListener("click", async () => {
   statusBar.textContent = "Translating…";
 
   try {
-    // 1) 먼저 /api/translate 엔드포인트를 시도
-    //    (이미 백엔드가 있으면 여기 맞춰서 응답만 주면 됨)
+    // 1) 먼저 /api/translate 엔드포인트 호출 시도
     const response = await fetch("/api/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -92,13 +91,12 @@ translateBtn.addEventListener("click", async () => {
 
     if (response.ok) {
       const data = await response.json();
-      // 백엔드에서 { translation: "..." } 형태로 돌려준다고 가정
       if (data && typeof data.translation === "string") {
         translated = data.translation;
       }
     }
 
-    // 2) 만약 API가 없거나 에러면 가짜 번역(fallback)
+    // 2) 백엔드가 없거나 실패하면 가짜 번역(fallback)
     if (!translated) {
       translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ` + text;
     }
@@ -112,4 +110,3 @@ translateBtn.addEventListener("click", async () => {
     setLoading(false);
   }
 });
-
