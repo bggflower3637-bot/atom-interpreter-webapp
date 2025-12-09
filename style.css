@@ -233,3 +233,21 @@ textarea {
   }
 }
 
+/* ==== Atom 디자인 튜닝 추가 ==== */
+
+/* 가운데 동그란 국기 버튼을 실제 '버튼'처럼 보이게 */
+.flag-badge {
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.flag-badge:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* 아래 직사각형 Start Translation 버튼은 화면에서 숨기기 */
+.primary-btn {
+  display: none;
+}
+
