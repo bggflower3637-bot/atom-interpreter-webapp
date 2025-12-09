@@ -1,153 +1,115 @@
-// script.js – Atom Interpreter WebApp v1 (Korean → English 전용)
+// 기본 언어 목록 (필요하면 추가 가능)
+const languages = [
+  { code: "auto", label: "Auto Detect" },
+  { code: "en", label: "English" },
+  { code: "ko", label: "Korean" },
+  { code: "es", label: "Spanish" },
+  { code: "zh", label: "Chinese (Simplified)" },
+  { code: "ja", label: "Japanese" },
+  { code: "fr", label: "French" },
+  { code: "de", label: "German" },
+  { code: "pt", label: "Portuguese" },
+  { code: "ru", label: "Russian" },
+  { code: "vi", label: "Vietnamese" }
+];
 
-// ===== 브라우저 TTS (Text → Speech) =====
-function speak(text, lang = "en-US") {
-  if (!("speechSynthesis" in window)) {
-    console.warn("이 브라우저는 SpeechSynthesis(음성 출력)를 지원하지 않습니다.");
+const fromSelect = document.getElementById("fromLang");
+const toSelect = document.getElementById("toLang");
+const sourceText = document.getElementById("sourceText");
+const targetText = document.getElementById("targetText");
+const sourceCount = document.getElementById("sourceCount");
+const translateBtn = document.getElementById("translateBtn");
+const statusBar = document.getElementById("statusBar");
+
+// 언어 옵션 채우기
+function populateLanguages() {
+  languages.forEach((lang) => {
+    const optFrom = document.createElement("option");
+    optFrom.value = lang.code;
+    optFrom.textContent = lang.label;
+    fromSelect.appendChild(optFrom);
+
+    const optTo = document.createElement("option");
+    optTo.value = lang.code;
+    optTo.textContent = lang.label;
+    toSelect.appendChild(optTo);
+  });
+
+  fromSelect.value = "auto";
+  toSelect.value = "en"; // 기본 대상 언어
+}
+
+populateLanguages();
+
+// 문자 수 표시
+sourceText.addEventListener("input", () => {
+  sourceCount.textContent = `${sourceText.value.length} / 500`;
+});
+
+// 로딩 상태 제어
+function setLoading(isLoading) {
+  if (isLoading) {
+    translateBtn.disabled = true;
+    translateBtn.innerHTML = "";
+    const spinner = document.createElement("div");
+    spinner.className = "spinner";
+    translateBtn.appendChild(spinner);
+  } else {
+    translateBtn.disabled = false;
+    translateBtn.innerHTML = "<span id='translateBtnText'>Start Translation</span>";
+  }
+}
+
+// 번역 버튼 클릭
+translateBtn.addEventListener("click", async () => {
+  const text = sourceText.value.trim();
+  if (!text) {
+    statusBar.textContent = "Please enter text to translate.";
     return;
   }
-  if (!text || text.trim() === "") return;
 
-  // 이전 재생 중인 음성 정지
-  window.speechSynthesis.cancel();
+  const from = fromSelect.value;
+  const to = toSelect.value;
 
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = lang;   // 예: "en-US", "ko-KR"
-  utter.rate = 1.0;
-  utter.pitch = 1.0;
-  utter.volume = 1.0;
-
-  window.speechSynthesis.speak(utter);
-}
-
-// ===== 전역 변수 =====
-let recognition = null;
-let isListening = false;
-
-// ===== DOM 요소 =====
-const inputBox   = document.getElementById("inputText");     // 왼쪽 텍스트 박스
-const outputBox  = document.getElementById("outputText");    // 오른쪽 텍스트 박스
-const startBtn   = document.getElementById("startBtn");      // 녹음 시작 버튼
-const stopBtn    = document.getElementById("stopBtn");       // 녹음 종료 버튼
-const translateBtn = document.getElementById("translateBtn");// 텍스트만 번역 버튼(옵션)
-
-// ===== STT(음성 인식) 초기화 – 한국어 전용 =====
-function initRecognition() {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    alert("이 브라우저는 Web Speech API 음성 인식을 지원하지 않습니다. Chrome 사용을 권장합니다.");
-    return null;
+  if (from === to && from !== "auto") {
+    statusBar.textContent = "From/To languages are the same.";
+    return;
   }
 
-  const recog = new SpeechRecognition();
-  recog.lang = "ko-KR";          // ★ 한국어 고정
-  recog.interimResults = true;   // 중간 결과도 받기
-  recog.continuous = true;       // 연속 인식
-
-  recog.onstart = () => {
-    isListening = true;
-    if (startBtn) startBtn.disabled = true;
-    if (stopBtn) stopBtn.disabled = false;
-  };
-
-  recog.onend = () => {
-    isListening = false;
-    if (startBtn) startBtn.disabled = false;
-    if (stopBtn) stopBtn.disabled = true;
-  };
-
-  recog.onerror = (event) => {
-    console.error("음성 인식 오류:", event.error);
-    isListening = false;
-    if (startBtn) startBtn.disabled = false;
-    if (stopBtn) stopBtn.disabled = true;
-  };
-
-  // 인식 결과 처리
-  recog.onresult = (event) => {
-    let transcript = "";
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      transcript += event.results[i][0].transcript;
-    }
-
-    // 왼쪽 박스에 실시간 표시
-    if (inputBox) inputBox.value = transcript;
-
-    // 문장이 확정된(final) 순간에 번역 실행
-    const isFinal = event.results[event.results.length - 1].isFinal;
-    if (!isFinal) return;
-
-    translateAndSpeak(transcript);
-  };
-
-  return recog;
-}
-
-// ===== 번역 + 음성 출력 (한국어 → 영어 고정) =====
-async function translateAndSpeak(text) {
-  if (!text || text.trim() === "") return;
-
-  if (outputBox) outputBox.value = "번역 중입니다... (Translating...)";
+  setLoading(true);
+  statusBar.textContent = "Translating…";
 
   try {
-    const res = await fetch("/api/translate", {
+    // 1) 먼저 /api/translate 엔드포인트를 시도
+    //    (이미 백엔드가 있으면 여기 맞춰서 응답만 주면 됨)
+    const response = await fetch("/api/translate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        text,
-        sourceLang: "ko",   // ★ 한국어 입력
-        targetLang: "en",   // ★ 영어 출력
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text, from, to })
     });
 
-    if (!res.ok) {
-      throw new Error("서버 응답 오류: " + res.status);
+    let translated;
+
+    if (response.ok) {
+      const data = await response.json();
+      // 백엔드에서 { translation: "..." } 형태로 돌려준다고 가정
+      if (data && typeof data.translation === "string") {
+        translated = data.translation;
+      }
     }
 
-    const data = await res.json();
-    const translated = (data.translatedText || "").trim();
+    // 2) 만약 API가 없거나 에러면 가짜 번역(fallback)
+    if (!translated) {
+      translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ` + text;
+    }
 
-    if (outputBox) outputBox.value = translated;
-
-    // 영어로 음성 출력
-    speak(translated, "en-US");
+    targetText.value = translated;
+    statusBar.textContent = "Done.";
   } catch (err) {
     console.error(err);
-    if (outputBox) {
-      outputBox.value = "번역 중 오류가 발생했습니다. (브라우저 콘솔을 확인하세요)";
-    }
+    statusBar.textContent = "Error during translation. Please try again.";
+  } finally {
+    setLoading(false);
   }
-}
+});
 
-// ===== 버튼 이벤트 설정 =====
-if (startBtn && stopBtn) {
-  startBtn.addEventListener("click", () => {
-    if (!recognition) {
-      recognition = initRecognition();
-      if (!recognition) return;
-    }
-    if (!isListening) {
-      recognition.start();
-    }
-  });
-
-  stopBtn.addEventListener("click", () => {
-    if (recognition && isListening) {
-      recognition.stop();
-    }
-  });
-}
-
-// ===== 텍스트 직접 입력 후 번역 버튼 (옵션) =====
-if (translateBtn && inputBox) {
-  translateBtn.addEventListener("click", () => {
-    const text = inputBox.value;
-    translateAndSpeak(text);
-  });
-}
-
-  
