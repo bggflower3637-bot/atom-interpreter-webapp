@@ -11,6 +11,7 @@
     <div class="notch"></div>
 
     <div class="inner">
+
       <!-- 헤더 -->
       <header class="app-header">
         <h1 class="app-title">ATOM INTERPRETER AI</h1>
@@ -29,10 +30,11 @@
         </div>
       </div>
 
-      <!-- 가운데 동그란 메인 버튼 -->
+      <!-- 가운데 동그란 국기 버튼 -->
       <div class="flag-badge-wrapper">
         <button class="flag-badge" id="flagButton" type="button">
-          <img src="ATOM INTERPRETER AI.png" alt="Translate button" />
+          <!-- ⭐ 최종: 오직 국기만 표시됨 ⭐ -->
+          <img id="flagImage" src="flags/us.png" alt="Selected Flag" />
         </button>
       </div>
 
@@ -61,7 +63,7 @@
         ></textarea>
       </div>
 
-      <!-- 기존 직사각형 버튼 (화면에서는 숨김 / 코드만 유지) -->
+      <!-- 기존 직사각형 번역 버튼 (숨김) -->
       <button class="primary-btn" id="translateBtn" type="button">
         <span id="translateBtnText">Start Translation</span>
       </button>
@@ -74,6 +76,7 @@
         <span class="crown">👑</span>
         <span>Upgrade to Pro</span>
       </button>
+
     </div>
   </div>
 
