@@ -9,11 +9,13 @@
 <body>
   <div class="phone-frame">
     <div class="notch"></div>
+
     <div class="inner">
-      <div class="app-header">
+      <!-- 헤더 -->
+      <header class="app-header">
         <h1 class="app-title">ATOM INTERPRETER AI</h1>
-        <div class="subtitle">PATENT PENDING · 2025</div>
-      </div>
+        <p class="subtitle">PATENT PENDING · 2025</p>
+      </header>
 
       <!-- 언어 선택 -->
       <div class="lang-row">
@@ -27,17 +29,14 @@
         </div>
       </div>
 
-      <!-- 가운데 동그란 배지(메인 버튼) -->
+      <!-- 가운데 동그란 메인 버튼 -->
       <div class="flag-badge-wrapper">
-        <div class="flag-badge">
-          <img src="ATOM INTERPRETER AI.png" alt="Language flags" />
-  style="width: 170px; height: 170px; object-fit: cover; border-radius: 50%;" 
-/>
-
-        </div>
+        <button class="flag-badge" id="flagButton" type="button">
+          <img src="ATOM INTERPRETER AI.png" alt="Translate button" />
+        </button>
       </div>
 
-      <!-- 원문 -->
+      <!-- 원문 텍스트 -->
       <div class="field">
         <div class="textarea-label-row">
           <label for="sourceText">Original Text</label>
@@ -62,15 +61,16 @@
         ></textarea>
       </div>
 
-      <!-- (숨길) Start Translation 버튼: 나중을 위해 남겨둠 -->
-      <button class="primary-btn" id="translateBtn">
+      <!-- 기존 직사각형 버튼 (화면에서는 숨김 / 코드만 유지) -->
+      <button class="primary-btn" id="translateBtn" type="button">
         <span id="translateBtnText">Start Translation</span>
       </button>
 
+      <!-- 상태 표시 -->
       <div class="status-bar" id="statusBar"></div>
 
       <!-- 업그레이드 버튼 -->
-      <button class="upgrade-btn">
+      <button class="upgrade-btn" type="button">
         <span class="crown">👑</span>
         <span>Upgrade to Pro</span>
       </button>
@@ -80,4 +80,3 @@
   <script src="script.js" defer></script>
 </body>
 </html>
-
