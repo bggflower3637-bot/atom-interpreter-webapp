@@ -111,44 +111,7 @@ select {
   gap: 10px;
 }
 
-/* 가운데 동그란 버튼 */
-.flag-badge-wrapper {
-  display: flex;
-  justify-content: center;
-  margin: 10px 0 14px;
-}
 
-.flag-badge {
-  width: 170px;
-  height: 170px;
-  border-radius: 50%;
-  border: none;
-  padding: 0;
-  background: radial-gradient(circle at 30% 20%, #ffffff, #e4e7f2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-  overflow: hidden;
-  transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.flag-badge:focus {
-  outline: none;
-}
-
-.flag-badge:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
-}
-
-.flag-badge img {
-  width: 90%;
-  height: 90%;
-  object-fit: cover;
-  border-radius: 50%;
-}
 
 /* 텍스트 영역 */
 .textarea-label-row {
@@ -166,6 +129,41 @@ select {
 textarea {
   min-height: 80px;
   resize: vertical;
+}
+/* 가운데 동그란 국기 버튼 */
+.flag-badge-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 14px;
+}
+
+.flag-badge {
+    width: 150px;      /* 조금 더 적당한 크기로 줄임 */
+    height: 150px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.flag-badge:active {
+    transform: scale(0.96);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.flag-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* 동그란 형태에 국기가 꽉 차게 들어감 */
+    border-radius: 50%;
+    pointer-events: none; /* 클릭 버그 방지 */
 }
 
 /* 버튼 공통 */
@@ -245,3 +243,4 @@ textarea {
     align-items: stretch;
   }
 }
+
