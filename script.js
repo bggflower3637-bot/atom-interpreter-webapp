@@ -1,126 +1,163 @@
-// 사용 언어 리스트
-const languages = [
-  { code: "auto", label: "Auto Detect" },
-  { code: "en", label: "English" },
-  { code: "ko", label: "Korean" },
-  { code: "es", label: "Spanish" },
-  { code: "zh", label: "Chinese (Simplified)" },
-  { code: "ja", label: "Japanese" },
-  { code: "fr", label: "French" },
-  { code: "de", label: "German" },
-  { code: "pt", label: "Portuguese" },
-  { code: "ru", label: "Russian" },
-  { code: "vi", label: "Vietnamese" }
-];
-
-const fromSelect = document.getElementById("fromLang");
-const toSelect = document.getElementById("toLang");
-const sourceText = document.getElementById("sourceText");
-const targetText = document.getElementById("targetText");
-const sourceCount = document.getElementById("sourceCount");
-const translateBtn = document.getElementById("translateBtn");
-const statusBar = document.getElementById("statusBar");
-const flagButton = document.getElementById("flagButton");
-
-// 언어 선택 박스 채우기
-function populateLanguages() {
-  languages.forEach((lang) => {
-    const optFrom = document.createElement("option");
-    optFrom.value = lang.code;
-    optFrom.textContent = lang.label;
-    fromSelect.appendChild(optFrom);
-
-    const optTo = document.createElement("option");
-    optTo.value = lang.code;
-    optTo.textContent = lang.label;
-    toSelect.appendChild(optTo);
-  });
-
-  fromSelect.value = "auto";
-  toSelect.value = "en";
+/* ===========================
+   GLOBAL
+=========================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-populateLanguages();
-
-// 글자 수 카운트
-sourceText.addEventListener("input", () => {
-  sourceCount.textContent = `${sourceText.value.length} / 500`;
-});
-
-// 로딩 상태 처리
-function setLoading(isLoading) {
-  if (!translateBtn) return;
-
-  if (isLoading) {
-    translateBtn.disabled = true;
-    translateBtn.innerHTML = "";
-    const spinner = document.createElement("div");
-    spinner.className = "spinner";
-    translateBtn.appendChild(spinner);
-  } else {
-    translateBtn.disabled = false;
-    translateBtn.innerHTML =
-      "<span id='translateBtnText'>Start Translation</span>";
-  }
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #f5f7ff, #e3e6f0);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", Arial, sans-serif;
 }
 
-// 실제 번역 함수
-async function handleTranslate() {
-  const text = sourceText.value.trim();
-  if (!text) {
-    statusBar.textContent = "Please enter text to translate.";
-    return;
-  }
-
-  const from = fromSelect.value;
-  const to = toSelect.value;
-
-  if (from === to && from !== "auto") {
-    statusBar.textContent = "From/To languages are the same.";
-    return;
-  }
-
-  setLoading(true);
-  statusBar.textContent = "Translating…";
-
-  try {
-    // 실제 백엔드 번역 API 호출
-    const response = await fetch("/api/translate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, from, to })
-    });
-
-    let translated;
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data && typeof data.translation === "string") {
-        translated = data.translation;
-      }
-    }
-
-    // 실패 시 가짜 번역 (Fallback)
-    if (!translated) {
-      translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ${text}`;
-    }
-
-    targetText.value = translated;
-    statusBar.textContent = "Done.";
-  } catch (err) {
-    console.error(err);
-    statusBar.textContent = "Error during translation. Please try again.";
-  } finally {
-    setLoading(false);
-  }
+/* ===========================
+   PHONE FRAME
+=========================== */
+.phone-frame {
+  width: 390px;
+  min-height: 780px;
+  background: white;
+  border-radius: 36px;
+  padding: 0;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+  position: relative;
 }
 
-// 숨겨져 있는 직사각형 버튼 (혹시 모를 경우를 위해 연결 유지)
-if (translateBtn) {
-  translateBtn.addEventListener("click", handleTranslate);
+.notch {
+  width: 120px;
+  height: 20px;
+  background: black;
+  border-radius: 20px;
+  margin: 20px auto 10px auto;
 }
 
-// 🔥 메인: 가운데 동그란 버튼 → 번역 실행
-if (flagButton) {
-  flagButton.addEventListener("click", handleTranslate);
+/* ===========================
+   INNER CONTENT LAYOUT
+=========================== */
+.inner {
+  padding: 40px;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+.app-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.app-title {
+  font-size: 26px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-family: "Times New Roman", serif !important;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* ===========================
+   FIELD BLOCK
+=========================== */
+.field {
+  margin-bottom: 18px;
+}
+
+label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 6px;
+  display: block;
+}
+
+select,
+textarea {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  background: #fdfdfd;
+}
+
+/* ===========================
+   CENTER BADGE IMAGE
+=========================== */
+.flag-badge-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 28px 0;
+}
+
+.flag-badge {
+  width: 130px;        /* ← 이미지 크기 조정 */
+  height: 130px;
+  border-radius: 50%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.flag-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===========================
+   STATUS BAR
+=========================== */
+.status-bar {
+  text-align: center;
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 12px;
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+.primary-btn,
+.upgrade-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.primary-btn {
+  background: #3232ff;
+  color: white;
+}
+
+.primary-btn:hover {
+  opacity: 0.85;
+}
+
+.upgrade-btn {
+  margin-top: 14px;
+  background: #f6e9c8;
+  color: #8a6b00;
+}
+
+.upgrade-btn:hover {
+  background: #f1dfb0;
 }
