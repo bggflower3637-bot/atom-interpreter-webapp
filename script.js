@@ -1,4 +1,4 @@
-// 기본 언어 목록 (필요하면 추가 가능)
+// 사용할 언어 리스트
 const languages = [
   { code: "auto", label: "Auto Detect" },
   { code: "en", label: "English" },
@@ -22,7 +22,7 @@ const translateBtn = document.getElementById("translateBtn");
 const statusBar = document.getElementById("statusBar");
 const flagBadge = document.querySelector(".flag-badge");
 
-// 언어 옵션 채우기
+// 언어 셀렉트 박스 채우기
 function populateLanguages() {
   languages.forEach((lang) => {
     const optFrom = document.createElement("option");
@@ -37,17 +37,17 @@ function populateLanguages() {
   });
 
   fromSelect.value = "auto";
-  toSelect.value = "en"; // 기본 대상 언어
+  toSelect.value = "en";
 }
 
 populateLanguages();
 
-// 문자 수 표시
+// 입력 글자수 표시
 sourceText.addEventListener("input", () => {
   sourceCount.textContent = `${sourceText.value.length} / 500`;
 });
 
-// 로딩 상태 제어
+// 로딩 상태 버튼 처리
 function setLoading(isLoading) {
   if (isLoading) {
     translateBtn.disabled = true;
@@ -57,10 +57,12 @@ function setLoading(isLoading) {
     translateBtn.appendChild(spinner);
   } else {
     translateBtn.disabled = false;
-    translateBtn.innerHTML = "<span id='translateBtnText'>Start Translation</span>";
+    translateBtn.innerHTML =
+      "<span id='translateBtnText'>Start Translation</span>";
   }
 }
-// ===== 번역 실행 함수 =====
+
+// 실제 번역 실행 함수
 async function handleTranslate() {
   const text = sourceText.value.trim();
   if (!text) {
@@ -95,7 +97,7 @@ async function handleTranslate() {
       }
     }
 
-    // fallback
+    // 백엔드 없거나 실패 시 가짜 번역
     if (!translated) {
       translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ` + text;
     }
@@ -110,13 +112,12 @@ async function handleTranslate() {
   }
 }
 
-// 1) 아래 버튼(지금은 숨김)
+// 1) (숨겨져 있는) Start Translation 버튼
 if (translateBtn) {
   translateBtn.addEventListener("click", handleTranslate);
 }
 
-// 2) 가운데 동그란 국기 버튼 클릭 시 번역
+// 2) 가운데 동그란 배지 클릭 시 번역 실행
 if (flagBadge) {
   flagBadge.addEventListener("click", handleTranslate);
 }
-
