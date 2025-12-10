@@ -20,6 +20,7 @@ const targetText = document.getElementById("targetText");
 const sourceCount = document.getElementById("sourceCount");
 const translateBtn = document.getElementById("translateBtn");
 const statusBar = document.getElementById("statusBar");
+const flagBadge = document.querySelector(".flag-badge");
 
 // 언어 옵션 채우기
 function populateLanguages() {
@@ -59,9 +60,8 @@ function setLoading(isLoading) {
     translateBtn.innerHTML = "<span id='translateBtnText'>Start Translation</span>";
   }
 }
-
-// 번역 버튼 클릭
-translateBtn.addEventListener("click", async () => {
+// ===== 번역 실행 함수 =====
+async function handleTranslate() {
   const text = sourceText.value.trim();
   if (!text) {
     statusBar.textContent = "Please enter text to translate.";
@@ -80,7 +80,6 @@ translateBtn.addEventListener("click", async () => {
   statusBar.textContent = "Translating…";
 
   try {
-    // 1) 먼저 /api/translate 엔드포인트 호출 시도
     const response = await fetch("/api/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -96,7 +95,7 @@ translateBtn.addEventListener("click", async () => {
       }
     }
 
-    // 2) 백엔드가 없거나 실패하면 가짜 번역(fallback)
+    // fallback
     if (!translated) {
       translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ` + text;
     }
@@ -109,4 +108,15 @@ translateBtn.addEventListener("click", async () => {
   } finally {
     setLoading(false);
   }
-});
+}
+
+// 1) 아래 버튼(지금은 숨김)
+if (translateBtn) {
+  translateBtn.addEventListener("click", handleTranslate);
+}
+
+// 2) 가운데 동그란 국기 버튼 클릭 시 번역
+if (flagBadge) {
+  flagBadge.addEventListener("click", handleTranslate);
+}
+
