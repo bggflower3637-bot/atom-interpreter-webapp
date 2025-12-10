@@ -251,3 +251,19 @@ textarea {
   display: none;
 }
 
+/* 가운데 국기 배지 클릭 효과 */
+.flag-badge {
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.flag-badge:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* Start Translation 버튼 숨기기 */
+.primary-btn {
+  display: none !important;
+}
+
