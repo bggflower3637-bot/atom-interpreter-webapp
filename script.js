@@ -1,4 +1,4 @@
-// 사용할 언어 리스트
+// 사용 언어 리스트
 const languages = [
   { code: "auto", label: "Auto Detect" },
   { code: "en", label: "English" },
@@ -20,9 +20,9 @@ const targetText = document.getElementById("targetText");
 const sourceCount = document.getElementById("sourceCount");
 const translateBtn = document.getElementById("translateBtn");
 const statusBar = document.getElementById("statusBar");
-const flagBadge = document.querySelector(".flag-badge");
+const flagButton = document.getElementById("flagButton");
 
-// 언어 셀렉트 박스 채우기
+// 언어 선택 박스 채우기
 function populateLanguages() {
   languages.forEach((lang) => {
     const optFrom = document.createElement("option");
@@ -42,13 +42,15 @@ function populateLanguages() {
 
 populateLanguages();
 
-// 입력 글자수 표시
+// 글자 수 카운트
 sourceText.addEventListener("input", () => {
   sourceCount.textContent = `${sourceText.value.length} / 500`;
 });
 
-// 로딩 상태 버튼 처리
+// 로딩 상태 처리
 function setLoading(isLoading) {
+  if (!translateBtn) return;
+
   if (isLoading) {
     translateBtn.disabled = true;
     translateBtn.innerHTML = "";
@@ -62,7 +64,7 @@ function setLoading(isLoading) {
   }
 }
 
-// 실제 번역 실행 함수
+// 실제 번역 함수
 async function handleTranslate() {
   const text = sourceText.value.trim();
   if (!text) {
@@ -82,6 +84,7 @@ async function handleTranslate() {
   statusBar.textContent = "Translating…";
 
   try {
+    // 실제 백엔드 번역 API 호출
     const response = await fetch("/api/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -97,9 +100,9 @@ async function handleTranslate() {
       }
     }
 
-    // 백엔드 없거나 실패 시 가짜 번역
+    // 실패 시 가짜 번역 (Fallback)
     if (!translated) {
-      translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ` + text;
+      translated = `[${from.toUpperCase()} → ${to.toUpperCase()}] ${text}`;
     }
 
     targetText.value = translated;
@@ -112,12 +115,12 @@ async function handleTranslate() {
   }
 }
 
-// 1) (숨겨져 있는) Start Translation 버튼
+// 숨겨져 있는 직사각형 버튼 (혹시 모를 경우를 위해 연결 유지)
 if (translateBtn) {
   translateBtn.addEventListener("click", handleTranslate);
 }
 
-// 2) 가운데 동그란 배지 클릭 시 번역 실행
-if (flagBadge) {
-  flagBadge.addEventListener("click", handleTranslate);
+// 🔥 메인: 가운데 동그란 버튼 → 번역 실행
+if (flagButton) {
+  flagButton.addEventListener("click", handleTranslate);
 }
