@@ -1,246 +1,35 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Helvetica Neue", Arial, sans-serif;
-}
-
-body {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at top, #f5f7ff, #e3e6f0);
-}
-
-/* 휴대폰 프레임 */
-.phone-frame {
-  width: 390px;
-  max-width: 100%;
-  background: #ffffff;
-  border-radius: 40px;
-  padding: 20px 18px 28px;
-  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.18);
-  position: relative;
-}
-
-/* 상단 노치 */
-.notch {
-  width: 120px;
-  height: 24px;
-  background: #000;
-  border-radius: 16px;
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.inner {
-  margin-top: 40px;
-}
-
-/* 타이틀 */
-.app-header {
-  text-align: center;
-  margin-bottom: 18px;
-}
-
-.app-title {
-  font-family: "Didot", "Bodoni MT", "Times New Roman", serif;
-  font-size: 26px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.subtitle {
-  margin-top: 4px;
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: #999;
-}
-
-/* 폼 필드 */
-.field {
-  margin-bottom: 14px;
-}
-
-label {
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 6px;
-  display: block;
-  font-weight: 500;
-}
-
-select,
-textarea {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid #dde1ec;
-  padding: 10px 12px;
-  font-size: 14px;
-  outline: none;
-  background: #fdfdff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease,
-    background 0.15s ease;
-}
-
-select:focus,
-textarea:focus {
-  border-color: #f6b825;
-  box-shadow: 0 0 0 2px rgba(246, 184, 37, 0.25);
-  background: #ffffff;
-}
-
-select {
-  height: 40px;
-  appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, #999 50%),
-    linear-gradient(135deg, #999 50%, transparent 50%);
-  background-position: calc(100% - 16px) 16px, calc(100% - 11px) 16px;
-  background-size: 6px 6px, 6px 6px;
-  background-repeat: no-repeat;
-}
-
-.lang-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-
-
-/* 텍스트 영역 */
-.textarea-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 6px;
-}
-
-.char-count {
-  font-size: 11px;
-  color: #999;
-}
-
-textarea {
-  min-height: 80px;
-  resize: vertical;
-}
-/* 가운데 동그란 국기 버튼 */
+/* 가운데 국기 버튼 */
 .flag-badge-wrapper {
     display: flex;
     justify-content: center;
-    margin: 10px 0 14px;
+    margin: 22px 0 30px;
 }
 
 .flag-badge {
-    width: 150px;      /* 조금 더 적당한 크기로 줄임 */
+    width: 150px;
     height: 150px;
     border-radius: 50%;
     border: none;
     padding: 0;
     background: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.12);
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .flag-badge:active {
     transform: scale(0.96);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.10);
 }
 
 .flag-badge img {
     width: 100%;
     height: 100%;
-    object-fit: cover;   /* 동그란 형태에 국기가 꽉 차게 들어감 */
-    border-radius: 50%;
-    pointer-events: none; /* 클릭 버그 방지 */
+    object-fit: cover;      /* 국기 꽉 차게 */
+    border-radius: 50%;     /* 동그랗게 */
+    pointer-events: none;   /* 클릭 문제 방지 */
 }
-
-/* 버튼 공통 */
-.primary-btn,
-.upgrade-btn {
-  width: 100%;
-  border-radius: 14px;
-  border: none;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: transform 0.08s ease, box-shadow 0.08s ease,
-    background 0.15s ease;
-}
-
-/* 원래 직사각형 번역 버튼 - 화면에서는 숨김 */
-.primary-btn {
-  margin-top: 8px;
-  margin-bottom: 6px;
-  background: linear-gradient(135deg, #f6b825, #f3a21a);
-  color: #2b1a00;
-  box-shadow: 0 10px 18px rgba(243, 162, 26, 0.35);
-  display: none !important;
-}
-
-/* 업그레이드 버튼 */
-.upgrade-btn {
-  background: #f7f1d6;
-  color: #a07508;
-  border: 1px solid #f1d58a;
-  margin-top: 10px;
-}
-
-.crown {
-  font-size: 15px;
-}
-
-/* 상태바 */
-.status-bar {
-  margin-top: 4px;
-  font-size: 11px;
-  color: #888;
-  text-align: center;
-  min-height: 14px;
-}
-
-/* 로딩 스피너 */
-.spinner {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  border-top-color: #fff;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* 모바일 전체 화면 대응 */
-@media (max-width: 420px) {
-  .phone-frame {
-    border-radius: 0;
-    height: 100vh;
-    max-height: 100vh;
-    box-shadow: none;
-  }
-  body {
-    align-items: stretch;
-  }
-}
-
