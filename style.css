@@ -67,6 +67,7 @@ body {
   height: 22px;
   border-radius: 999px;
   background: #000000;
+  pointer-events: none;   /* <-- 이 한줄이 클릭막힘 문제 100% 해결 */
 }
 
 /* 헤더 */
@@ -268,3 +269,4 @@ body {
     height: 135px;
   }
 }
+
