@@ -161,3 +161,106 @@ textarea {
 .upgrade-btn:hover {
   background: #f1dfb0;
 }
+// 기본 상태
+let isRecording = false;
+let sourceLang = "auto";
+let targetLang = "en";
+
+const root = document.querySelector(".app-root");
+const micButton = document.getElementById("micButton");
+const clearButton = document.getElementById("clearButton");
+
+const sourceTextEl = document.getElementById("sourceText");
+const targetTextEl = document.getElementById("targetText");
+
+const sourceLangGrid = document.getElementById("sourceLangGrid");
+const targetLangGrid = document.getElementById("targetLangGrid");
+const sourceLangLabel = document.getElementById("sourceLangLabel");
+const targetLangLabel = document.getElementById("targetLangLabel");
+const currentSourceLabel = document.getElementById("currentSourceLabel");
+const currentTargetLabel = document.getElementById("currentTargetLabel");
+
+// --- 마이크 토글 ---
+micButton.addEventListener("click", () => {
+  isRecording = !isRecording;
+  root.classList.toggle("is-recording", isRecording);
+
+  if (isRecording) {
+    startAtomSession();
+  } else {
+    stopAtomSession();
+  }
+});
+
+// --- 언어 선택 공통 함수 ---
+function handleLangClick(event, gridEl, type) {
+  const btn = event.target.closest(".lang-pill");
+  if (!btn) return;
+
+  const lang = btn.dataset.lang;
+  if (!lang) return;
+
+  // active 클래스 이동
+  [...gridEl.querySelectorAll(".lang-pill")].forEach((b) =>
+    b.classList.remove("active")
+  );
+  btn.classList.add("active");
+
+  if (type === "source") {
+    sourceLang = lang;
+    const label = lang === "auto" ? "Auto Detect" : btn.innerText.trim();
+    sourceLangLabel.textContent = lang === "auto" ? "Auto" : label;
+    currentSourceLabel.textContent = label;
+  } else {
+    targetLang = lang;
+    const label = btn.innerText.trim();
+    targetLangLabel.textContent = label;
+    currentTargetLabel.textContent = label;
+  }
+
+  // 필요하다면 여기에서 언어 변경을 백엔드에 알려줄 수 있음
+  updateLangOnServer();
+}
+
+sourceLangGrid.addEventListener("click", (e) =>
+  handleLangClick(e, sourceLangGrid, "source")
+);
+targetLangGrid.addEventListener("click", (e) =>
+  handleLangClick(e, targetLangGrid, "target")
+);
+
+// --- 텍스트 지우기 ---
+clearButton.addEventListener("click", () => {
+  sourceTextEl.textContent = "Waiting for input…";
+  targetTextEl.textContent =
+    "When you speak, your interpreted message will appear here.";
+});
+
+// --- 여기부터 기존 실시간 통역 로직 붙이기 ---
+
+function startAtomSession() {
+  // TODO: 여기 Khan이 사용하던
+  //  - 마이크 활성화
+  //  - WebSocket / fetch 요청
+  //  - 스트리밍 텍스트 업데이트
+  // 코드 붙이기
+
+  // 예시: 스트리밍 도중에 텍스트 업데이트할 때 이런 식으로 사용
+  //   sourceTextEl.textContent = incomingOriginal;
+  //   targetTextEl.textContent = incomingTranslated;
+}
+
+function stopAtomSession() {
+  // TODO: 여기 마이크 종료 + 스트림 종료 코드 붙이기
+}
+
+// 서버에 언어 변경 전달 (필요 없으면 비워둬도 됨)
+function updateLangOnServer() {
+  // ex)
+  // fetch("/api/update-language", {
+  //   method: "POST",
+  //   headers: { "Content-Type": "application/json" },
+  //   body: JSON.stringify({ sourceLang, targetLang }),
+  // });
+}
+
