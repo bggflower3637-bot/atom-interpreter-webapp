@@ -1,171 +1,13 @@
-/* ===========================
-   GLOBAL
-=========================== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: radial-gradient(circle at top, #f5f7ff, #e3e6f0);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Helvetica Neue", Arial, sans-serif;
-}
-
-/* ===========================
-   PHONE FRAME
-=========================== */
-.phone-frame {
-  width: 390px;
-  min-height: 780px;
-  background: white;
-  border-radius: 36px;
-  padding: 0;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-  position: relative;
-}
-
-.notch {
-  width: 120px;
-  height: 20px;
-  background: black;
-  border-radius: 20px;
-  margin: 20px auto 10px auto;
-}
-
-/* ===========================
-   INNER CONTENT LAYOUT
-=========================== */
-.inner {
-  padding: 40px;
-}
-
-/* ===========================
-   HEADER
-=========================== */
-.app-header {
-  text-align: center;
-  margin-bottom: 18px;
-}
-
-.app-title {
-  font-size: 26px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  font-family: "Times New Roman", serif !important;
-  font-weight: bold;
-}
-
-.subtitle {
-  font-size: 12px;
-  letter-spacing: 0.25em;
-  color: #777;
-  margin-top: 4px;
-}
-
-/* ===========================
-   FIELD BLOCK
-=========================== */
-.field {
-  margin-bottom: 18px;
-}
-
-label {
-  font-size: 13px;
-  color: #555;
-  margin-bottom: 6px;
-  display: block;
-}
-
-select,
-textarea {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  border: 1px solid #ddd;
-  font-size: 14px;
-  outline: none;
-  resize: none;
-  font-family: inherit;
-  background: #fdfdfd;
-}
-
-/* ===========================
-   CENTER BADGE IMAGE
-=========================== */
-.flag-badge-wrapper {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0 28px 0;
-}
-
-.flag-badge {
-  width: 130px;        /* ← 이미지 크기 조정 */
-  height: 130px;
-  border-radius: 50%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-}
-
-.flag-badge img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* ===========================
-   STATUS BAR
-=========================== */
-.status-bar {
-  text-align: center;
-  font-size: 13px;
-  color: #777;
-  margin-bottom: 12px;
-}
-
-/* ===========================
-   BUTTONS
-=========================== */
-.primary-btn,
-.upgrade-btn {
-  width: 100%;
-  padding: 15px;
-  border-radius: 16px;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-  transition: 0.2s;
-  font-weight: 500;
-}
-
-.primary-btn {
-  background: #3232ff;
-  color: white;
-}
-
-.primary-btn:hover {
-  opacity: 0.85;
-}
-
-.upgrade-btn {
-  margin-top: 14px;
-  background: #f6e9c8;
-  color: #8a6b00;
-}
-
-.upgrade-btn:hover {
-  background: #f1dfb0;
-}
-// 기본 상태
+// ======= 상태 변수 =======
 let isRecording = false;
 let sourceLang = "auto";
 let targetLang = "en";
 
+let mediaStream = null;
+let mediaRecorder = null;
+let audioChunks = [];
+
+// ======= 엘리먼트 =======
 const root = document.querySelector(".app-root");
 const micButton = document.getElementById("micButton");
 const clearButton = document.getElementById("clearButton");
@@ -180,19 +22,24 @@ const targetLangLabel = document.getElementById("targetLangLabel");
 const currentSourceLabel = document.getElementById("currentSourceLabel");
 const currentTargetLabel = document.getElementById("currentTargetLabel");
 
-// --- 마이크 토글 ---
-micButton.addEventListener("click", () => {
-  isRecording = !isRecording;
-  root.classList.toggle("is-recording", isRecording);
-
-  if (isRecording) {
-    startAtomSession();
+// =======================
+// 1) 마이크 버튼 토글
+// =======================
+micButton.addEventListener("click", async () => {
+  if (!isRecording) {
+    isRecording = true;
+    root.classList.add("is-recording");
+    await startAtomSession();
   } else {
+    isRecording = false;
+    root.classList.remove("is-recording");
     stopAtomSession();
   }
 });
 
-// --- 언어 선택 공통 함수 ---
+// =======================
+// 2) 언어 선택 (Source / Target)
+// =======================
 function handleLangClick(event, gridEl, type) {
   const btn = event.target.closest(".lang-pill");
   if (!btn) return;
@@ -200,25 +47,26 @@ function handleLangClick(event, gridEl, type) {
   const lang = btn.dataset.lang;
   if (!lang) return;
 
-  // active 클래스 이동
+  // active 이동
   [...gridEl.querySelectorAll(".lang-pill")].forEach((b) =>
     b.classList.remove("active")
   );
   btn.classList.add("active");
 
+  const labelText = btn.innerText.trim();
+
   if (type === "source") {
     sourceLang = lang;
-    const label = lang === "auto" ? "Auto Detect" : btn.innerText.trim();
+    const label =
+      lang === "auto" ? "Auto Detect" : labelText;
     sourceLangLabel.textContent = lang === "auto" ? "Auto" : label;
     currentSourceLabel.textContent = label;
   } else {
     targetLang = lang;
-    const label = btn.innerText.trim();
-    targetLangLabel.textContent = label;
-    currentTargetLabel.textContent = label;
+    targetLangLabel.textContent = labelText;
+    currentTargetLabel.textContent = labelText;
   }
 
-  // 필요하다면 여기에서 언어 변경을 백엔드에 알려줄 수 있음
   updateLangOnServer();
 }
 
@@ -229,38 +77,136 @@ targetLangGrid.addEventListener("click", (e) =>
   handleLangClick(e, targetLangGrid, "target")
 );
 
-// --- 텍스트 지우기 ---
+// =======================
+// 3) 텍스트 클리어
+// =======================
 clearButton.addEventListener("click", () => {
   sourceTextEl.textContent = "Waiting for input…";
   targetTextEl.textContent =
     "When you speak, your interpreted message will appear here.";
 });
 
-// --- 여기부터 기존 실시간 통역 로직 붙이기 ---
+// =======================
+// 4) ATOM 세션 시작 (녹음 시작)
+// =======================
+async function startAtomSession() {
+  try {
+    // 이미 녹음 중이면 무시
+    if (mediaRecorder && mediaRecorder.state === "recording") return;
 
-function startAtomSession() {
-  // TODO: 여기 Khan이 사용하던
-  //  - 마이크 활성화
-  //  - WebSocket / fetch 요청
-  //  - 스트리밍 텍스트 업데이트
-  // 코드 붙이기
+    // 마이크 권한 요청
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
 
-  // 예시: 스트리밍 도중에 텍스트 업데이트할 때 이런 식으로 사용
-  //   sourceTextEl.textContent = incomingOriginal;
-  //   targetTextEl.textContent = incomingTranslated;
+    mediaRecorder = new MediaRecorder(mediaStream, {
+      mimeType: "audio/webm",
+    });
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data && event.data.size > 0) {
+        audioChunks.push(event.data);
+      }
+    };
+
+    // 녹음 시작
+    mediaRecorder.start();
+
+    // UI 안내 문구
+    sourceTextEl.textContent = "Listening… Speak freely.";
+    targetTextEl.textContent =
+      "When you tap stop, Atom will interpret and show the result here.";
+
+    // stop 이벤트 안에서 서버 전송
+    mediaRecorder.onstop = async () => {
+      if (!audioChunks.length) return;
+
+      const blob = new Blob(audioChunks, { type: "audio/webm" });
+
+      // ====== 여기가 백엔드 연동 부분 ======
+      // 필요하다면 '/api/translate' 경로를
+      // Khan이 실제로 만들어둔 API 경로로 바꿔주면 됨
+      const formData = new FormData();
+      formData.append("audio", blob, "audio.webm");
+      formData.append("sourceLang", sourceLang);
+      formData.append("targetLang", targetLang);
+
+      try {
+        const res = await fetch("/api/translate", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          throw new Error("API error: " + res.status);
+        }
+
+        const data = await res.json();
+
+        // 백엔드에서 어떤 필드명을 쓰는지에 따라 아래를 맞춰주면 됨
+        const source =
+          data.sourceText || data.transcript || data.text || "(no source text)";
+        const target =
+          data.targetText ||
+          data.translation ||
+          data.translatedText ||
+          "(no translation)";
+
+        sourceTextEl.textContent = source;
+        targetTextEl.textContent = target;
+      } catch (err) {
+        console.error(err);
+        targetTextEl.textContent =
+          "Sorry, something went wrong while contacting the server.";
+      } finally {
+        // 스트림 정리
+        cleanupMedia();
+        isRecording = false;
+        root.classList.remove("is-recording");
+      }
+    };
+  } catch (err) {
+    console.error("Microphone error:", err);
+    sourceTextEl.textContent =
+      "Cannot access microphone. Please check browser permission.";
+    targetTextEl.textContent = "";
+    isRecording = false;
+    root.classList.remove("is-recording");
+    cleanupMedia();
+  }
 }
 
+// =======================
+// 5) ATOM 세션 정지 (버튼 누를 때)
+// =======================
 function stopAtomSession() {
-  // TODO: 여기 마이크 종료 + 스트림 종료 코드 붙이기
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop(); // onstop 이벤트에서 서버로 전송
+  } else {
+    cleanupMedia();
+  }
 }
 
-// 서버에 언어 변경 전달 (필요 없으면 비워둬도 됨)
+// =======================
+// 6) 미디어 스트림 정리
+// =======================
+function cleanupMedia() {
+  if (mediaStream) {
+    mediaStream.getTracks().forEach((track) => track.stop());
+    mediaStream = null;
+  }
+  mediaRecorder = null;
+  audioChunks = [];
+}
+
+// =======================
+// 7) 언어 변경 서버에 전달 (선택사항)
+// =======================
 function updateLangOnServer() {
-  // ex)
+  // 필요 없다면 비워둬도 OK.
+  // Khan이 이미 이런 API를 만들어놨다면 여기서 호출.
   // fetch("/api/update-language", {
   //   method: "POST",
   //   headers: { "Content-Type": "application/json" },
   //   body: JSON.stringify({ sourceLang, targetLang }),
   // });
 }
-
