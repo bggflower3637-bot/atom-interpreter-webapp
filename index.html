@@ -2,194 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ATOM INTERPRETER AI</title>
+  <title>Atom Interpreter AI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-root">
-    <!-- 상단 고정 배지 -->
-    <div class="top-badge">
-      <span class="badge-pill">PATENT PENDING 2025</span>
-      <span class="badge-pill badge-secondary">REAL-TIME AI INTERPRETER</span>
+  <div class="page-bg">
+    <div class="phone-shell">
+      <header class="ai-header">
+        <h1 class="logo-title">Atom Interpreter AI</h1>
+        <p class="logo-subtitle">PATENT PENDING · 2025</p>
+      </header>
+
+      <main class="ai-main">
+        <!-- From 언어 -->
+        <div class="field-group">
+          <label for="fromLang" class="field-label">From</label>
+          <div class="select-wrap">
+            <select id="fromLang" class="select-input">
+              <option value="auto">Auto detect</option>
+              <option value="en">English</option>
+              <option value="ko">Korean</option>
+              <option value="es">Spanish</option>
+              <option value="ja">Japanese</option>
+              <option value="zh">Chinese</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+
+        <!-- To 언어 -->
+        <div class="field-group">
+          <label for="toLang" class="field-label">To</label>
+          <div class="select-wrap">
+            <select id="toLang" class="select-input">
+              <option value="en" selected>English</option>
+              <option value="ko">Korean</option>
+              <option value="es">Spanish</option>
+              <option value="ja">Japanese</option>
+              <option value="zh">Chinese</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+
+        <!-- 가운데 플래그 아이콘 -->
+        <div class="badge-wrap">
+          <!-- 리포에 있는 이미지를 써도 되고, 나중에 flags.png로 교체해도 됨 -->
+          <div class="badge-circle">
+            <img
+              src="ATOM INTERPRETER AI.png"
+              alt="World flags"
+              class="badge-image"
+            />
+          </div>
+        </div>
+
+        <!-- 원문 입력 -->
+        <div class="field-group">
+          <label for="sourceText" class="field-label small">Original Text</label>
+          <textarea
+            id="sourceText"
+            class="text-area"
+            placeholder="Enter text to translate..."
+          ></textarea>
+        </div>
+
+        <!-- 번역 결과 -->
+        <div class="field-group">
+          <label for="targetText" class="field-label small">Translation</label>
+          <textarea
+            id="targetText"
+            class="text-area"
+            placeholder="Translation appears here..."
+            readonly
+          ></textarea>
+        </div>
+
+        <!-- Pro 업그레이드 버튼 -->
+        <button id="translateButton" class="primary-btn">
+          Translate with Atom
+        </button>
+
+        <button class="upgrade-btn">
+          <span class="crown">👑</span>
+          <span>Upgrade to Pro</span>
+        </button>
+      </main>
     </div>
-
-    <header class="app-header">
-      <div class="logo-wrap">
-        <div class="logo-circle">A</div>
-        <div class="logo-text">
-          <h1>ATOM INTERPRETER AI</h1>
-          <p>Speak freely. We handle the languages.</p>
-        </div>
-      </div>
-
-      <div class="header-right">
-        <span class="header-tag">v1.0 • Beta</span>
-      </div>
-    </header>
-
-    <main class="app-main">
-      <section class="shell">
-        <!-- 왼쪽 패널 : 컨트롤 + 언어 선택 -->
-        <div class="left-panel">
-          <h2 class="panel-title">Live Interpretation Console</h2>
-          <p class="panel-subtitle">
-            Press the mic, start speaking. Atom automatically listens, interprets,
-            and explains context in Smart Auto Mode.
-          </p>
-
-          <div class="mic-card">
-            <button id="micButton" class="mic-button">
-              <div class="mic-inner">
-                <span class="mic-icon">🎙️</span>
-                <span class="mic-label mic-label-idle">Tap to Start</span>
-                <span class="mic-label mic-label-active">Listening… Tap to Stop</span>
-              </div>
-            </button>
-
-            <div class="mic-status">
-              <span class="status-dot status-dot-idle"></span>
-              <span class="status-text status-text-idle">Idle • Ready to listen</span>
-              <span class="status-text status-text-active">Live • Interpreting in real time</span>
-            </div>
-          </div>
-
-          <div class="lang-section">
-            <div class="lang-header">
-              <span>Source language</span>
-              <span id="currentSourceLabel" class="lang-current">Auto Detect</span>
-            </div>
-
-            <div class="lang-grid" id="sourceLangGrid">
-              <!-- 언어 버튼들 (원형 플래그 스타일) -->
-              <button class="lang-pill active" data-lang="auto">
-                <span class="flag-circle">🌐</span>
-                <span>Auto</span>
-              </button>
-              <button class="lang-pill" data-lang="en">
-                <span class="flag-circle">🇺🇸</span>
-                <span>English</span>
-              </button>
-              <button class="lang-pill" data-lang="ko">
-                <span class="flag-circle">🇰🇷</span>
-                <span>Korean</span>
-              </button>
-              <button class="lang-pill" data-lang="es">
-                <span class="flag-circle">🇪🇸</span>
-                <span>Spanish</span>
-              </button>
-              <button class="lang-pill" data-lang="ja">
-                <span class="flag-circle">🇯🇵</span>
-                <span>Japanese</span>
-              </button>
-              <button class="lang-pill" data-lang="zh">
-                <span class="flag-circle">🇨🇳</span>
-                <span>Chinese</span>
-              </button>
-              <button class="lang-pill" data-lang="fr">
-                <span class="flag-circle">🇫🇷</span>
-                <span>French</span>
-              </button>
-              <button class="lang-pill" data-lang="de">
-                <span class="flag-circle">🇩🇪</span>
-                <span>German</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="lang-section">
-            <div class="lang-header">
-              <span>Target language</span>
-              <span id="currentTargetLabel" class="lang-current">English</span>
-            </div>
-
-            <div class="lang-grid" id="targetLangGrid">
-              <button class="lang-pill active" data-lang="en">
-                <span class="flag-circle">🇺🇸</span>
-                <span>English</span>
-              </button>
-              <button class="lang-pill" data-lang="ko">
-                <span class="flag-circle">🇰🇷</span>
-                <span>Korean</span>
-              </button>
-              <button class="lang-pill" data-lang="es">
-                <span class="flag-circle">🇪🇸</span>
-                <span>Spanish</span>
-              </button>
-              <button class="lang-pill" data-lang="ja">
-                <span class="flag-circle">🇯🇵</span>
-                <span>Japanese</span>
-              </button>
-              <button class="lang-pill" data-lang="zh">
-                <span class="flag-circle">🇨🇳</span>
-                <span>Chinese</span>
-              </button>
-              <button class="lang-pill" data-lang="fr">
-                <span class="flag-circle">🇫🇷</span>
-                <span>French</span>
-              </button>
-              <button class="lang-pill" data-lang="de">
-                <span class="flag-circle">🇩🇪</span>
-                <span>German</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 오른쪽 패널 : 실시간 텍스트 영역 -->
-        <div class="right-panel">
-          <div class="wave-card">
-            <div class="wave-header">
-              <span>Live Stream</span>
-              <span class="wave-chip">Smart Auto Mode</span>
-            </div>
-            <div class="wave-placeholder">
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-              <div class="wave-bar"></div>
-            </div>
-          </div>
-
-          <div class="text-grid">
-            <div class="text-column">
-              <div class="text-header">
-                <span>Speaker</span>
-                <span class="text-sub" id="sourceLangLabel">Auto</span>
-              </div>
-              <div id="sourceText" class="text-box">
-                Waiting for input…
-              </div>
-            </div>
-            <div class="text-column">
-              <div class="text-header">
-                <span>Interpreted</span>
-                <span class="text-sub" id="targetLangLabel">English</span>
-              </div>
-              <div id="targetText" class="text-box">
-                When you speak, your interpreted message will appear here.
-              </div>
-            </div>
-          </div>
-
-          <div class="session-footer">
-            <button id="clearButton" class="ghost-btn">Clear Text</button>
-            <span class="session-note">
-              Atom never stores your audio or text on this demo. Sessions reset when you refresh.
-            </span>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="app-footer">
-      <span>© 2025 ATOM INTERPRETER AI · ANIMA OS</span>
-      <span>Designed for real-time meetings, lectures, and multi-speaker conversations.</span>
-    </footer>
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
