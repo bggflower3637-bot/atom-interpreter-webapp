@@ -2,84 +2,194 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Atom Interpreter AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ATOM INTERPRETER AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="phone-frame">
-    <div class="notch"></div>
-
-    <div class="inner">
-
-      <!-- 헤더 -->
-      <header class="app-header">
-        <h1 class="app-title">ATOM INTERPRETER AI</h1>
-        <p class="subtitle">PATENT PENDING · 2025</p>
-      </header>
-
-      <!-- 언어 선택 -->
-      <div class="lang-row">
-        <div class="field">
-          <label for="fromLang">From</label>
-          <select id="fromLang"></select>
-        </div>
-        <div class="field">
-          <label for="toLang">To</label>
-          <select id="toLang"></select>
-        </div>
-      </div>
-
-      <!-- 가운데 동그란 국기 버튼 -->
-      <div class="flag-badge-wrapper">
-        <button class="flag-badge" id="flagButton" type="button">
-          <!-- ⭐ 최종: 오직 국기만 표시됨 ⭐ -->
-          <img id="flagImage" src="flags/us.png" alt="Selected Flag" />
-        </button>
-      </div>
-
-      <!-- 원문 텍스트 -->
-      <div class="field">
-        <div class="textarea-label-row">
-          <label for="sourceText">Original Text</label>
-          <span class="char-count" id="sourceCount">0 / 500</span>
-        </div>
-        <textarea
-          id="sourceText"
-          maxlength="500"
-          placeholder="Enter text to translate..."
-        ></textarea>
-      </div>
-
-      <!-- 번역 결과 -->
-      <div class="field">
-        <div class="textarea-label-row">
-          <label for="targetText">Translation</label>
-        </div>
-        <textarea
-          id="targetText"
-          placeholder="Translation appears here..."
-          readonly
-        ></textarea>
-      </div>
-
-      <!-- 기존 직사각형 번역 버튼 (숨김) -->
-      <button class="primary-btn" id="translateBtn" type="button">
-        <span id="translateBtnText">Start Translation</span>
-      </button>
-
-      <!-- 상태 표시 -->
-      <div class="status-bar" id="statusBar"></div>
-
-      <!-- 업그레이드 버튼 -->
-      <button class="upgrade-btn" type="button">
-        <span class="crown">👑</span>
-        <span>Upgrade to Pro</span>
-      </button>
-
+  <div class="app-root">
+    <!-- 상단 고정 배지 -->
+    <div class="top-badge">
+      <span class="badge-pill">PATENT PENDING 2025</span>
+      <span class="badge-pill badge-secondary">REAL-TIME AI INTERPRETER</span>
     </div>
+
+    <header class="app-header">
+      <div class="logo-wrap">
+        <div class="logo-circle">A</div>
+        <div class="logo-text">
+          <h1>ATOM INTERPRETER AI</h1>
+          <p>Speak freely. We handle the languages.</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <span class="header-tag">v1.0 • Beta</span>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <section class="shell">
+        <!-- 왼쪽 패널 : 컨트롤 + 언어 선택 -->
+        <div class="left-panel">
+          <h2 class="panel-title">Live Interpretation Console</h2>
+          <p class="panel-subtitle">
+            Press the mic, start speaking. Atom automatically listens, interprets,
+            and explains context in Smart Auto Mode.
+          </p>
+
+          <div class="mic-card">
+            <button id="micButton" class="mic-button">
+              <div class="mic-inner">
+                <span class="mic-icon">🎙️</span>
+                <span class="mic-label mic-label-idle">Tap to Start</span>
+                <span class="mic-label mic-label-active">Listening… Tap to Stop</span>
+              </div>
+            </button>
+
+            <div class="mic-status">
+              <span class="status-dot status-dot-idle"></span>
+              <span class="status-text status-text-idle">Idle • Ready to listen</span>
+              <span class="status-text status-text-active">Live • Interpreting in real time</span>
+            </div>
+          </div>
+
+          <div class="lang-section">
+            <div class="lang-header">
+              <span>Source language</span>
+              <span id="currentSourceLabel" class="lang-current">Auto Detect</span>
+            </div>
+
+            <div class="lang-grid" id="sourceLangGrid">
+              <!-- 언어 버튼들 (원형 플래그 스타일) -->
+              <button class="lang-pill active" data-lang="auto">
+                <span class="flag-circle">🌐</span>
+                <span>Auto</span>
+              </button>
+              <button class="lang-pill" data-lang="en">
+                <span class="flag-circle">🇺🇸</span>
+                <span>English</span>
+              </button>
+              <button class="lang-pill" data-lang="ko">
+                <span class="flag-circle">🇰🇷</span>
+                <span>Korean</span>
+              </button>
+              <button class="lang-pill" data-lang="es">
+                <span class="flag-circle">🇪🇸</span>
+                <span>Spanish</span>
+              </button>
+              <button class="lang-pill" data-lang="ja">
+                <span class="flag-circle">🇯🇵</span>
+                <span>Japanese</span>
+              </button>
+              <button class="lang-pill" data-lang="zh">
+                <span class="flag-circle">🇨🇳</span>
+                <span>Chinese</span>
+              </button>
+              <button class="lang-pill" data-lang="fr">
+                <span class="flag-circle">🇫🇷</span>
+                <span>French</span>
+              </button>
+              <button class="lang-pill" data-lang="de">
+                <span class="flag-circle">🇩🇪</span>
+                <span>German</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="lang-section">
+            <div class="lang-header">
+              <span>Target language</span>
+              <span id="currentTargetLabel" class="lang-current">English</span>
+            </div>
+
+            <div class="lang-grid" id="targetLangGrid">
+              <button class="lang-pill active" data-lang="en">
+                <span class="flag-circle">🇺🇸</span>
+                <span>English</span>
+              </button>
+              <button class="lang-pill" data-lang="ko">
+                <span class="flag-circle">🇰🇷</span>
+                <span>Korean</span>
+              </button>
+              <button class="lang-pill" data-lang="es">
+                <span class="flag-circle">🇪🇸</span>
+                <span>Spanish</span>
+              </button>
+              <button class="lang-pill" data-lang="ja">
+                <span class="flag-circle">🇯🇵</span>
+                <span>Japanese</span>
+              </button>
+              <button class="lang-pill" data-lang="zh">
+                <span class="flag-circle">🇨🇳</span>
+                <span>Chinese</span>
+              </button>
+              <button class="lang-pill" data-lang="fr">
+                <span class="flag-circle">🇫🇷</span>
+                <span>French</span>
+              </button>
+              <button class="lang-pill" data-lang="de">
+                <span class="flag-circle">🇩🇪</span>
+                <span>German</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 오른쪽 패널 : 실시간 텍스트 영역 -->
+        <div class="right-panel">
+          <div class="wave-card">
+            <div class="wave-header">
+              <span>Live Stream</span>
+              <span class="wave-chip">Smart Auto Mode</span>
+            </div>
+            <div class="wave-placeholder">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+          </div>
+
+          <div class="text-grid">
+            <div class="text-column">
+              <div class="text-header">
+                <span>Speaker</span>
+                <span class="text-sub" id="sourceLangLabel">Auto</span>
+              </div>
+              <div id="sourceText" class="text-box">
+                Waiting for input…
+              </div>
+            </div>
+            <div class="text-column">
+              <div class="text-header">
+                <span>Interpreted</span>
+                <span class="text-sub" id="targetLangLabel">English</span>
+              </div>
+              <div id="targetText" class="text-box">
+                When you speak, your interpreted message will appear here.
+              </div>
+            </div>
+          </div>
+
+          <div class="session-footer">
+            <button id="clearButton" class="ghost-btn">Clear Text</button>
+            <span class="session-note">
+              Atom never stores your audio or text on this demo. Sessions reset when you refresh.
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>© 2025 ATOM INTERPRETER AI · ANIMA OS</span>
+      <span>Designed for real-time meetings, lectures, and multi-speaker conversations.</span>
+    </footer>
   </div>
 
-  <script src="script.js" defer></script>
+  <script src="script.js"></script>
 </body>
 </html>
+
