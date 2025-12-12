@@ -1,108 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Atom Interpreter AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="page-bg">
-    <div class="phone-shell">
-      <header class="ai-header">
-        <h1 class="logo-title">ATOM INTERPRETER AI</h1>
-        <p class="logo-subtitle">PATENT PENDING · 2025</p>
-      </header>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Atom Interpreter AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-wrap">
+      <main class="card">
+        <header class="card-header">
+          <h1 class="app-title">ATOM INTERPRETER AI</h1>
+          <p class="app-subtitle">PATENT PENDING · 2025</p>
+        </header>
 
-      <main class="ai-main">
-        <!-- From 언어 -->
-        <div class="field-group">
-          <label for="fromLang" class="field-label">From</label>
-          <div class="select-wrap">
-            <select id="fromLang" class="select-input">
-              <option value="auto">Auto detect</option>
+        <!-- Language selectors -->
+        <section class="lang-row">
+          <div class="field">
+            <label for="fromLang">From</label>
+            <select id="fromLang" class="select">
+              <option value="auto" selected>Auto detect</option>
               <option value="en">English</option>
               <option value="ko">Korean</option>
-              <option value="es">Spanish</option>
               <option value="ja">Japanese</option>
               <option value="zh">Chinese</option>
+              <option value="es">Spanish</option>
               <option value="fr">French</option>
               <option value="de">German</option>
             </select>
-            <span class="select-arrow">▾</span>
           </div>
-        </div>
-
-        <!-- To 언어 -->
-        <div class="field-group">
-          <label for="toLang" class="field-label">To</label>
-          <div class="select-wrap">
-            <select id="toLang" class="select-input">
+          <div class="field">
+            <label for="toLang">To</label>
+            <select id="toLang" class="select">
               <option value="en" selected>English</option>
               <option value="ko">Korean</option>
-              <option value="es">Spanish</option>
               <option value="ja">Japanese</option>
               <option value="zh">Chinese</option>
+              <option value="es">Spanish</option>
               <option value="fr">French</option>
               <option value="de">German</option>
             </select>
-            <span class="select-arrow">▾</span>
           </div>
-        </div>
+        </section>
 
-        <!-- 가운데 국기 동그라미 버튼 -->
-        <div class="badge-wrap">
-          <div
+        <!-- Center gold-rim button -->
+        <section class="badge-wrap">
+          <button
             id="atomButton"
+            type="button"
             class="badge-circle"
-            role="button"
             aria-label="Translate with Atom"
-          >
-            <img
-              src="ATOM INTERPRETER AI.png"
-              alt="World flags"
-              class="badge-image"
-            />
+          ></button>
+        </section>
+
+        <!-- Text areas -->
+        <section class="text-section">
+          <div class="field">
+            <label for="sourceText">Original Text</label>
+            <textarea
+              id="sourceText"
+              class="textarea"
+              placeholder="Enter text to translate..."
+              rows="4"
+            ></textarea>
           </div>
-        </div>
 
-        <!-- 원문 입력 -->
-        <div class="field-group">
-          <label for="sourceText" class="field-label small">Original Text</label>
-          <textarea
-            id="sourceText"
-            class="text-area"
-            placeholder="Enter text to translate..."
-          ></textarea>
-        </div>
+          <div class="field">
+            <label for="targetText">Translation</label>
+            <textarea
+              id="targetText"
+              class="textarea"
+              placeholder="Translation appears here..."
+              rows="4"
+              readonly
+            ></textarea>
+          </div>
+        </section>
 
-        <!-- 번역 결과 -->
-        <div class="field-group">
-          <label for="targetText" class="field-label small">Translation</label>
-          <textarea
-            id="targetText"
-            class="text-area"
-            placeholder="Translation appears here..."
-            readonly
-          ></textarea>
-        </div>
-
-        <!-- 메인 액션 버튼 -->
-        <button id="translateButton" class="primary-btn">
-          Translate with Atom
-        </button>
-
-        <!-- Pro 업그레이드 버튼 -->
-        <button class="upgrade-btn">
-          <span class="crown">👑</span>
-          <span>Upgrade to Pro</span>
-        </button>
+        <!-- Buttons -->
+        <section class="actions">
+          <button id="translateButton" type="button" class="btn primary">
+            Translate with Atom
+          </button>
+          <button type="button" class="btn secondary">
+            🌟 Upgrade to Pro
+          </button>
+        </section>
       </main>
     </div>
-  </div>
 
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
 
-  
+    
+     
