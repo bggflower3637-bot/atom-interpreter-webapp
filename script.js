@@ -8,7 +8,7 @@ const atomButton = document.getElementById("atomButton");
 // 메인 번역 버튼 클릭 로직 (현재는 데모 모드)
 if (translateButton) {
   translateButton.addEventListener("click", async () => {
-    const text = sourceTextEl ? sourceTextEl.value.trim() : "";
+    const text = (sourceTextEl && sourceTextEl.value.trim()) || "";
     const fromLang = fromLangSelect ? fromLangSelect.value : "auto";
     const toLang = toLangSelect ? toLangSelect.value : "en";
 
@@ -20,7 +20,7 @@ if (translateButton) {
     }
 
     if (targetTextEl) {
-      targetTextEl.value = "Translating with Atom…";
+      targetTextEl.value = "Translating with Atom...";
     }
 
     try {
@@ -36,14 +36,13 @@ if (translateButton) {
     } catch (err) {
       console.error(err);
       if (targetTextEl) {
-        targetTextEl.value =
-          "Sorry, something went wrong while contacting the server.";
+        targetTextEl.value = "Error: failed to translate. Please try again.";
       }
     }
   });
 }
 
-// 가운데 국기 동그라미 클릭 시 → Translate 버튼 대신 눌러주기
+// ⭐ 가운데 금태 원형 버튼 → 메인 번역 버튼을 대신 클릭
 if (atomButton && translateButton) {
   atomButton.addEventListener("click", () => {
     translateButton.click();
