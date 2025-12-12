@@ -224,3 +224,15 @@ label {
     height: 148px;
   }
 }
+.logo-area {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-img {
+    width: 260px;   /* 필요하면 크기 조절 가능 */
+    height: auto;
+    margin-bottom: 10px;
+    user-select: none;
+}
+
