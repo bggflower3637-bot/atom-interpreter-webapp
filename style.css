@@ -100,8 +100,8 @@ label {
 }
 
 .badge-circle {
-  width: 160px;
-  height: 160px;
+  width: 230px;
+  height: 230px;
   border-radius: 50%;
   border: none;
   padding: 0;
@@ -235,4 +235,5 @@ label {
     margin-bottom: 10px;
     user-select: none;
 }
+
 
