@@ -1,264 +1,226 @@
+/* 전체 페이지 배경 & 중앙 정렬 */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+body {
   margin: 0;
-  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #ffffff 0, #f0f1f5 40%, #e5e7eb 100%);
+  color: #111827;
 }
 
-:root {
-  --bg-page: #f3f4f6;
-  --card-bg: #ffffff;
-  --text-main: #111827;
-  --text-muted: #9ca3af;
-  --border-soft: #e5e7eb;
-  --accent-gold: #fbbf24;
-  --accent-gold-dark: #f59e0b;
-  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.15);
-  --radius-shell: 32px;
-  --radius-field: 999px;
-  --radius-area: 22px;
-  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Inter", sans-serif;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  font-family: var(--font-sans);
-  background: var(--bg-page);
-  color: var(--text-main);
-  overflow-x: hidden;
-}
-
-/* 전체 배경 + 가운데 정렬 */
-.page-bg {
+.page-wrap {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 12px;
+  padding: 24px;
 }
 
-/* 카드(폰 쉘) */
-.phone-shell {
+/* 메인 카드 */
+.card {
   width: 100%;
   max-width: 420px;
-  background: var(--card-bg);
-  border-radius: var(--radius-shell);
-  box-shadow: var(--shadow-soft);
-  padding: 28px 22px 26px;
+  background: #ffffff;
+  border-radius: 32px;
+  box-shadow: 0 32px 80px rgba(15, 23, 42, 0.22);
+  padding: 28px 24px 24px;
 }
 
 /* 헤더 */
-.ai-header {
+.card-header {
   text-align: center;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
-.logo-title {
-  font-size: 1.5rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+.app-title {
+  margin: 0;
+  font-size: 1.4rem;
+  letter-spacing: 0.22em;
   font-weight: 600;
 }
 
-.logo-subtitle {
-  font-size: 0.75rem;
-  margin-top: 4px;
-  color: var(--text-muted);
-  letter-spacing: 0.16em;
-}
-
-/* 메인 */
-.ai-main {
-  margin-top: 8px;
-}
-
-/* 필드 공통 */
-.field-group {
-  margin-bottom: 12px;
-}
-
-.field-label {
-  display: block;
-  font-size: 0.8rem;
-  margin-bottom: 4px;
-  color: #6b7280;
-}
-
-.field-label.small {
-  font-size: 0.78rem;
-}
-
-/* 셀렉트 */
-.select-wrap {
-  position: relative;
-}
-
-.select-input {
-  width: 100%;
-  padding: 10px 36px 10px 16px;
-  border-radius: var(--radius-field);
-  border: 1px solid var(--border-soft);
-  font-size: 0.9rem;
-  background-color: #f9fafb;
-  appearance: none;
-  outline: none;
-  color: #111827;
-}
-
-.select-input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
-  background: #ffffff;
-}
-
-.select-arrow {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.75rem;
+.app-subtitle {
+  margin: 6px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
   color: #9ca3af;
 }
 
-/* 중앙 배지(국기 버튼) */
+/* 언어 선택 행 */
+.lang-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.select {
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  appearance: none;
+  background:
+    #ffffff
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%239ca3af' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E")
+    no-repeat right 12px center;
+  background-size: 14px;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+}
+
+/* 가운데 금태 버튼 */
 .badge-wrap {
   display: flex;
   justify-content: center;
-  margin: 18px 0 14px;
+  margin: 28px 0 20px;
 }
 
 .badge-circle {
-  width: 140px;
-  height: 140px;
-  border-radius: 999px;
-  background: radial-gradient(circle at 30% 0, #ffffff, #d1d5db);
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+
+  /* 업로드한 국기+금태 이미지 사용 */
+  background-image: url("ChatGPT Image Dec 8, 2025, 07_50_20 PM.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.22),
+    0 12px 24px rgba(0, 0, 0, 0.24),
     0 0 0 8px #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  cursor: pointer;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .badge-circle:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.25),
+    0 16px 32px rgba(0, 0, 0, 0.26),
     0 0 0 10px #e5e7eb;
 }
 
 .badge-circle:active {
   transform: translateY(0);
   box-shadow:
-    0 8px 18px rgba(0, 0, 0, 0.22),
+    0 10px 20px rgba(0, 0, 0, 0.24),
     0 0 0 6px #e5e7eb;
 }
 
-.badge-image {
-  width: 82%;
-  height: 82%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 /* 텍스트 영역 */
-.text-area {
-  width: 100%;
-  min-height: 90px;
-  border-radius: var(--radius-area);
-  border: 1px solid var(--border-soft);
-  background: #f9fafb;
-  padding: 10px 14px;
-  font-size: 0.9rem;
-  resize: vertical;
-  outline: none;
-  line-height: 1.5;
-}
-
-.text-area:focus {
-  border-color: #6366f1;
-  background: #ffffff;
-}
-
-/* 메인 번역 버튼 */
-.primary-btn {
-  width: 100%;
-  margin-top: 8px;
-  padding: 12px 18px;
-  border-radius: var(--radius-field);
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: linear-gradient(90deg, #6366f1, #4f46e5);
-  color: #ffffff;
-  box-shadow: 0 12px 25px rgba(79, 70, 229, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.primary-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 35px rgba(79, 70, 229, 0.4);
-}
-
-.primary-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
-}
-
-/* Pro 업그레이드 버튼 */
-.upgrade-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px 18px;
-  border-radius: var(--radius-field);
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.92rem;
-  background: linear-gradient(90deg, var(--accent-gold), var(--accent-gold-dark));
-  color: #78350f;
+.text-section {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.35);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
-.upgrade-btn:hover {
+.textarea {
+  width: 100%;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+  resize: vertical;
+  min-height: 88px;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.35);
+}
+
+/* 버튼들 */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn {
+  width: 100%;
+  border-radius: 999px;
+  border: none;
+  padding: 11px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.09s ease, box-shadow 0.09s ease, opacity 0.09s ease;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.45);
+}
+
+.btn.primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 38px rgba(245, 158, 11, 0.45);
+  box-shadow: 0 16px 32px rgba(79, 70, 229, 0.52);
 }
 
-.upgrade-btn:active {
+.btn.primary:active {
   transform: translateY(0);
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.45);
 }
 
-.crown {
-  font-size: 1rem;
+.btn.secondary {
+  background: linear-gradient(90deg, #fbbf24, #f97316);
+  color: #1f2933;
+  box-shadow: 0 10px 22px rgba(245, 158, 11, 0.4);
 }
 
-/* 모바일 조금 타이트하게 */
-@media (max-width: 400px) {
-  .phone-shell {
-    padding: 24px 18px 22px;
+.btn.secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(245, 158, 11, 0.48);
+}
+
+.btn.secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 9px 18px rgba(245, 158, 11, 0.4);
+}
+
+/* 모바일 대응 */
+@media (max-width: 480px) {
+  .card {
+    padding: 22px 18px 20px;
     border-radius: 28px;
   }
 
   .badge-circle {
-    width: 130px;
-    height: 130px;
+    width: 148px;
+    height: 148px;
   }
 }
-
