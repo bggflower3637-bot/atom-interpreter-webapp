@@ -29,3 +29,8 @@ micBtn.onclick = async () => {
   recorder.start();
   setTimeout(() => recorder.stop(), 5000); // 5초 녹음
 };
+
+micBtn.onclick = async () => {
+  console.log("🎤 Speak clicked");
+  ...
+}
