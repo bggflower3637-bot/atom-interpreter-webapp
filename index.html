@@ -1,66 +1,21 @@
-01 <!doctype html>
-02 <html lang="en">
-03 <head>
-04   <meta charset="UTF-8" />
-05   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-06   <title>Atom Interpreter AI</title>
-07   <link rel="stylesheet" href="style.css" />
-08 </head>
-09 <body>
-10   <main class="page">
-11     <section class="card" aria-label="Atom Interpreter AI">
-12       <header class="header">
-13         <h1 class="title">Atom Interpreter AI</h1>
-14         <div class="subtitle">PATENT PENDING • 2025</div>
-15       </header>
-16 
-17       <div class="controls">
-18         <div class="select-group">
-19           <label for="fromLang">From</label>
-20           <select id="fromLang">
-21             <option value="auto" selected>Auto detect</option>
-22             <option value="Korean">Korean</option>
-23             <option value="English">English</option>
-24             <option value="Spanish">Spanish</option>
-25             <option value="Japanese">Japanese</option>
-26             <option value="Chinese">Chinese</option>
-27           </select>
-28         </div>
-29 
-30         <div class="select-group">
-31           <label for="toLang">To</label>
-32           <select id="toLang">
-33             <option value="English" selected>English</option>
-34             <option value="Korean">Korean</option>
-35             <option value="Spanish">Spanish</option>
-36             <option value="Japanese">Japanese</option>
-37             <option value="Chinese">Chinese</option>
-38           </select>
-39         </div>
-40       </div>
-41 
-42       <!-- ✅ 동그란 "굽기" 버튼 (배지) -->
-43       <button id="translateBtn" type="button" class="badge-circle" aria-label="Translate with Atom">
-44         <img class="badge-img" src="ATOM INTERPRETER AI.png" alt="Atom Badge" />
-45         <span class="badge-text">굽기</span>
-46       </button>
-47 
-48       <div class="io">
-49         <div class="field">
-50           <div class="field-label">Original Text</div>
-51           <textarea id="inputText" placeholder="Enter text to translate..."></textarea>
-52         </div>
-53 
-54         <div class="field">
-55           <div class="field-label">Translation</div>
-56           <textarea id="outputText" placeholder="Translation appears here..." readonly></textarea>
-57         </div>
-58       </div>
-59 
-60       <button id="upgradeBtn" type="button" class="upgrade-btn">✨ Upgrade to Pro</button>
-61     </section>
-62   </main>
-63 
-64   <script src="script.js" defer></script>
-65 </body>
-66 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Atom Interpreter AI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="card">
+  <h1>Atom Interpreter AI</h1>
+  <p class="sub">PATENT PENDING · 2025</p>
+
+  <button id="micBtn">🎤 Speak</button>
+
+  <textarea id="result" placeholder="Interpretation appears here..."></textarea>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
