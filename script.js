@@ -48,3 +48,32 @@ if (atomButton && translateButton) {
     translateButton.click();
   });
 }
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("translateBtn");
+  const input = document.getElementById("inputText");
+  const output = document.getElementById("outputText");
+  const from = document.getElementById("sourceLang");
+  const to = document.getElementById("targetLang");
+
+  btn.addEventListener("click", async () => {
+    const text = (input.value || "").trim();
+    if (!text) return;
+
+    output.value = "Translating...";
+
+    const res = await fetch("/api/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text,
+        sourceLang: from?.value || "Auto",
+        targetLang: to?.value || "English",
+      }),
+    });
+
+    const data = await res.json();
+    output.value = data.output || "";
+  });
+});
+
+
