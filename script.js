@@ -1,79 +1,56 @@
-const translateButton = document.getElementById("translateButton");
-const fromLangSelect = document.getElementById("fromLang");
-const toLangSelect = document.getElementById("toLang");
-const sourceTextEl = document.getElementById("sourceText");
-const targetTextEl = document.getElementById("targetText");
-const atomButton = document.getElementById("atomButton");
-
-// 메인 번역 버튼 클릭 로직 (현재는 데모 모드)
-if (translateButton) {
-  translateButton.addEventListener("click", async () => {
-    const text = (sourceTextEl && sourceTextEl.value.trim()) || "";
-    const fromLang = fromLangSelect ? fromLangSelect.value : "auto";
-    const toLang = toLangSelect ? toLangSelect.value : "en";
-
-    if (!text) {
-      if (targetTextEl) {
-        targetTextEl.value = "Please enter text to translate.";
-      }
-      return;
-    }
-
-    if (targetTextEl) {
-      targetTextEl.value = "Translating with Atom...";
-    }
-
-    try {
-      // TODO: 여기 나중에 실제 백엔드 번역 API 연결
-      // const res = await fetch("/api/text-translate", { ... });
-      // const data = await res.json();
-      // targetTextEl.value = data.translatedText || "(no result)";
-
-      // 데모: 입력 텍스트 그대로 보여주기
-      if (targetTextEl) {
-        targetTextEl.value = `[Demo] ${fromLang} → ${toLang}\n\n${text}`;
-      }
-    } catch (err) {
-      console.error(err);
-      if (targetTextEl) {
-        targetTextEl.value = "Error: failed to translate. Please try again.";
-      }
-    }
-  });
-}
-
-// ⭐ 가운데 금태 원형 버튼 → 메인 번역 버튼을 대신 클릭
-if (atomButton && translateButton) {
-  atomButton.addEventListener("click", () => {
-    translateButton.click();
-  });
-}
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("translateBtn");
-  const input = document.getElementById("inputText");
-  const output = document.getElementById("outputText");
-  const from = document.getElementById("sourceLang");
-  const to = document.getElementById("targetLang");
-
-  btn.addEventListener("click", async () => {
-    const text = (input.value || "").trim();
-    if (!text) return;
-
-    output.value = "Translating...";
-
-    const res = await fetch("/api/translate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        text,
-        sourceLang: from?.value || "Auto",
-        targetLang: to?.value || "English",
-      }),
-    });
-
-    const data = await res.json();
-    output.value = data.output || "";
-  });
-});
-
-
+01 const translateBtn = document.getElementById("translateBtn");
+02 const inputText = document.getElementById("inputText");
+03 const outputText = document.getElementById("outputText");
+04 const fromLang = document.getElementById("fromLang");
+05 const toLang = document.getElementById("toLang");
+06 const upgradeBtn = document.getElementById("upgradeBtn");
+07 
+08 async function doTranslate() {
+09   const text = (inputText.value || "").trim();
+10   if (!text) {
+11     outputText.value = "";
+12     return;
+13   }
+14 
+15   outputText.value = "Translating...";
+16 
+17   const payload = {
+18     text,
+19     sourceLang: fromLang.value === "auto" ? null : fromLang.value,
+20     targetLang: toLang.value
+21   };
+22 
+23   try {
+24     const res = await fetch("/api/translate", {
+25       method: "POST",
+26       headers: { "Content-Type": "application/json" },
+27       body: JSON.stringify(payload)
+28     });
+29 
+30     // 서버가 에러면, JSON 아닐 수도 있으니 안전하게 처리
+31     const contentType = res.headers.get("content-type") || "";
+32     const data = contentType.includes("application/json") ? await res.json() : { error: await res.text() };
+33 
+34     if (!res.ok) {
+35       outputText.value = data?.error || "Translation failed";
+36       return;
+37     }
+38 
+39     outputText.value = data?.output || "";
+40   } catch (err) {
+41     outputText.value = "Network error";
+42     console.error(err);
+43   }
+44 }
+45 
+46 translateBtn.addEventListener("click", doTranslate);
+47 
+48 // 편의: Ctrl+Enter로 번역
+49 inputText.addEventListener("keydown", (e) => {
+50   if (e.ctrlKey && e.key === "Enter") doTranslate();
+51 });
+52 
+53 // Upgrade 버튼은 지금은 동작 안 하게(추후 결제 연결)
+54 upgradeBtn.addEventListener("click", () => {
+55   alert("Coming soon.");
+56 });
