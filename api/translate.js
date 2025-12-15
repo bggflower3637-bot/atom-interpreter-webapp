@@ -1,46 +1,47 @@
-// api/translate.js
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// /api/translate.js
 
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
 
+  const { text, targetLang = "English" } = req.body || {};
+
+  if (!text || text.trim() === "") {
+    res.status(400).json({ error: "No text provided" });
+    return;
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    res.status(500).json({ error: "Missing OPENAI_API_KEY" });
+    return;
+  }
+
   try {
-    const { text, to = "English" } = req.body || {};
-
-    if (!text || !String(text).trim()) {
-      res.status(200).json({ output: "" });
-      return;
-    }
-
-    // OpenAI Responses API (recommended)
-    const response = await client.responses.create({
-      model: "gpt-5",
-      input: [
-        {
-          role: "system",
-          content:
-            "You are Atom Interpreter AI. Interpret the user's speech naturally into the target language. Return only the translated text.",
-        },
-        {
-          role: "user",
-          content: `Target language: ${to}\n\n${text}`,
-        },
-      ],
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4.1-mini",
+        input: `Translate the following text to ${targetLang}. Return only the translation:\n\n${text}`,
+      }),
     });
 
-    res.status(200).json({
-      output: response.output_text ?? "",
-    });
+    const data = await response.json();
+
+    const output =
+      data.output_text ||
+      data.output?.[0]?.content?.[0]?.text ||
+      "";
+
+    res.status(200).json({ output });
   } catch (err) {
-    console.error("translate API error:", err);
-    res.status(500).json({ error: "OpenAI request failed" });
+    console.error("TRANSLATE API ERROR:", err);
+    res.status(500).json({ error: "Translation failed" });
   }
 }
